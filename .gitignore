@@ -49,3 +49,6 @@ agent/
 
 # Environment Variables
 .env
+
+# AI Agent Configuration
+.agents/
