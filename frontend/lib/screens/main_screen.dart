@@ -10,9 +10,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // Placeholder screens until we build the real ones
+  // Placeholder screens 
   final List<Widget> _screens = [
-    const Center(child: Text('Home (Trips)', style: TextStyle(fontSize: 24))),
+    const Center(child: Text('Home ', style: TextStyle(fontSize: 24))),
     const Center(child: Text('AI Predictor', style: TextStyle(fontSize: 24))),
     const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
   ];
