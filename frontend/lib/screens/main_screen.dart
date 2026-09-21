@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'home_trip_list_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -10,40 +11,47 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  // Placeholder screens 
-  final List<Widget> _screens = [
-    const Center(child: Text('Home ', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('AI Predictor', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Profile', style: TextStyle(fontSize: 24))),
+  final List<Widget> _pages = [
+    const HomeTripListScreen(),
+    const Center(child: Text('Predictor Screen (Coming Soon)')),
+    const Center(child: Text('Dashboard Screen (Coming Soon)')),
+    const Center(child: Text('Profile Screen (Coming Soon)')),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('TravelSense AI'),
-      ),
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
+      body: _pages[_currentIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (index) {
           setState(() {
             _currentIndex = index;
           });
         },
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.flight_takeoff),
-            label: 'Trips',
+        backgroundColor: Colors.white,
+        elevation: 8,
+        shadowColor: Colors.black.withValues(alpha: 0.1),
+        indicatorColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home),
+            label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.auto_graph),
-            label: 'AI Predictor',
+          NavigationDestination(
+            icon: Icon(Icons.analytics_outlined),
+            selectedIcon: Icon(Icons.analytics),
+            label: 'Predictor',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+          NavigationDestination(
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],
