@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   // ProviderScope is required at the root for Riverpod to work
@@ -13,10 +14,11 @@ class TravelSenseApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'TravelSense AI',
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
+      theme: AppTheme.lightTheme,
+      home: const Scaffold(
         body: Center(
           child: Text('Welcome to TravelSense AI!'),
         ),
