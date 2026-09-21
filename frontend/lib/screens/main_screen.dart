@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_trip_list_screen.dart';
+import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -15,7 +16,7 @@ class _MainScreenState extends State<MainScreen> {
     const HomeTripListScreen(),
     const Center(child: Text('Predictor Screen (Coming Soon)')),
     const Center(child: Text('Dashboard Screen (Coming Soon)')),
-    const Center(child: Text('Profile Screen (Coming Soon)')),
+    const ProfileScreen(),
   ];
 
   @override
