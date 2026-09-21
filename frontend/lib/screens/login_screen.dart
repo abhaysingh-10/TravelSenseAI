@@ -1,27 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'main_screen.dart';
 import 'register_screen.dart';
+import '../providers/auth_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
-  void _handleLogin() {
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const MainScreen()),
+  Future<void> _handleLogin() async {
+    final success = await ref.read(authProvider.notifier).login(
+      _emailController.text,
+      _passwordController.text,
     );
+
+    if (success && mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ref.read(authProvider).error ?? 'Login failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -150,7 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 32),
                         // Login Button
                         ElevatedButton(
-                          onPressed: _handleLogin,
+                          onPressed: authState.isLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
                             foregroundColor: Colors.white,
@@ -161,10 +179,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             elevation: 4,
                             shadowColor: Theme.of(context).primaryColor.withOpacity(0.4),
                           ),
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+                          child: authState.isLoading 
+                            ? const SizedBox(
+                                height: 24, 
+                                width: 24, 
+                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)
+                              )
+                            : const Text(
+                                'Log In',
+                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
                         ),
                       ],
                     ),

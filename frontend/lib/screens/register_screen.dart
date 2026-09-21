@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'main_screen.dart';
+import '../providers/auth_provider.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -16,15 +18,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
 
-  void _handleRegister() {
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const MainScreen()),
-      (route) => false,
+  Future<void> _handleRegister() async {
+    if (_passwordController.text != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match'), backgroundColor: Colors.red),
+      );
+      return;
+    }
+
+    final success = await ref.read(authProvider.notifier).register(
+      _nameController.text,
+      _emailController.text,
+      _passwordController.text,
     );
+
+    if (success && mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const MainScreen()),
+        (route) => false,
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(ref.read(authProvider).error ?? 'Registration failed'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authProvider);
+
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -150,7 +176,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             const SizedBox(height: 32),
                             // Sign Up Button
                             ElevatedButton(
-                              onPressed: _handleRegister,
+                              onPressed: authState.isLoading ? null : _handleRegister,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 foregroundColor: Colors.white,
@@ -161,10 +187,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 elevation: 4,
                                 shadowColor: Theme.of(context).primaryColor.withOpacity(0.4),
                               ),
-                              child: const Text(
-                                'Sign Up',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
+                              child: authState.isLoading 
+                                ? const SizedBox(
+                                    height: 24, 
+                                    width: 24, 
+                                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)
+                                  )
+                                : const Text(
+                                    'Sign Up',
+                                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  ),
                             ),
                           ],
                         ),
