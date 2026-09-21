@@ -20,7 +20,8 @@ class AppTheme {
         surface: cardColor,
       ),
       textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.inter(color: textColor, fontWeight: FontWeight.bold),
+        displayLarge: GoogleFonts.playfairDisplay(color: textColor, fontWeight: FontWeight.bold),
+        headlineMedium: GoogleFonts.playfairDisplay(color: textColor, fontWeight: FontWeight.bold),
         bodyLarge: GoogleFonts.inter(color: textColor),
         bodyMedium: GoogleFonts.inter(color: textColor.withValues(alpha: 0.8)),
       ),
