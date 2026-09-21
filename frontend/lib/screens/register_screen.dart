@@ -119,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                  color: Colors.grey.shade400,
+                                  color: Colors.grey.shade600,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -138,7 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                  color: Colors.grey.shade400,
+                                  color: Colors.grey.shade600,
                                 ),
                                 onPressed: () {
                                   setState(() {
@@ -214,14 +214,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      style: const TextStyle(fontWeight: FontWeight.w500),
+      style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.grey.shade500),
+        prefixIcon: Icon(icon, color: Colors.grey.shade700),
         suffixIcon: suffixIcon,
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey.shade400),
+        hintStyle: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500),
         filled: true,
-        fillColor: Colors.grey.shade50,
+        fillColor: Colors.grey.shade100,
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -229,7 +229,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Theme.of(context).primaryColor.withOpacity(0.3), width: 1.5),
+          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
         ),
       ),
     );
