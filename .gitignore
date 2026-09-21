@@ -52,3 +52,11 @@ agent/
 
 # AI Agent Configuration
 .agents/
+
+# Python related
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
