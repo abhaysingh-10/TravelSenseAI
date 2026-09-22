@@ -3,10 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Define Core Colors for TravelSense AI
-  static const Color primaryColor = Color(0xFF009688); 
-  static const Color secondaryColor = Color(0xFFFF7043); 
-  static const Color backgroundColor = Color(0xFFF7F9FB); 
-  static const Color textColor = Color(0xFF2C3E50); 
+  static const Color primaryColor = Color(0xFF009688);
+  static const Color secondaryColor = Color(0xFFFF7043);
+  static const Color backgroundColor = Color(0xFFF7F9FB);
+  static const Color textColor = Color(0xFF2C3E50);
   static const Color cardColor = Colors.white;
 
   // Define Global Light Theme
@@ -20,8 +20,10 @@ class AppTheme {
         surface: cardColor,
       ),
       textTheme: GoogleFonts.interTextTheme().copyWith(
-        displayLarge: GoogleFonts.playfairDisplay(color: textColor, fontWeight: FontWeight.bold),
-        headlineMedium: GoogleFonts.playfairDisplay(color: textColor, fontWeight: FontWeight.bold),
+        displayLarge: GoogleFonts.playfairDisplay(
+            color: textColor, fontWeight: FontWeight.bold),
+        headlineMedium: GoogleFonts.playfairDisplay(
+            color: textColor, fontWeight: FontWeight.bold),
         bodyLarge: GoogleFonts.inter(color: textColor),
         bodyMedium: GoogleFonts.inter(color: textColor.withValues(alpha: 0.8)),
       ),
@@ -29,7 +31,8 @@ class AppTheme {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: textColor),
-        titleTextStyle: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
+        titleTextStyle: TextStyle(
+            color: textColor, fontSize: 20, fontWeight: FontWeight.w600),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(

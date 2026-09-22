@@ -9,12 +9,13 @@ class AuthNotifier extends Notifier<AuthState> {
 
   Future<bool> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 1));
 
     if (email.isEmpty || password.isEmpty) {
-      state = state.copyWith(isLoading: false, error: 'Email and password cannot be empty');
+      state = state.copyWith(
+          isLoading: false, error: 'Email and password cannot be empty');
       return false;
     }
 
@@ -31,24 +32,25 @@ class AuthNotifier extends Notifier<AuthState> {
     };
 
     final user = User.fromJson(mockResponse['user'] as Map<String, dynamic>);
-    
+
     state = state.copyWith(
       isLoading: false,
       user: user,
       accessToken: mockResponse['access_token'] as String,
     );
-    
+
     return true;
   }
 
   Future<bool> register(String fullName, String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
-    
+
     // Simulate network delay
     await Future.delayed(const Duration(seconds: 1));
 
     if (email.isEmpty || password.isEmpty || fullName.isEmpty) {
-      state = state.copyWith(isLoading: false, error: 'All fields are required');
+      state =
+          state.copyWith(isLoading: false, error: 'All fields are required');
       return false;
     }
 
@@ -65,13 +67,13 @@ class AuthNotifier extends Notifier<AuthState> {
     };
 
     final user = User.fromJson(mockResponse['user'] as Map<String, dynamic>);
-    
+
     state = state.copyWith(
       isLoading: false,
       user: user,
       accessToken: mockResponse['access_token'] as String,
     );
-    
+
     return true;
   }
 
@@ -80,4 +82,5 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 }
 
-final authProvider = NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);
+final authProvider =
+    NotifierProvider<AuthNotifier, AuthState>(AuthNotifier.new);

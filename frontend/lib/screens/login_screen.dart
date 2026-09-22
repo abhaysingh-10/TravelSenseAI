@@ -18,9 +18,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     final success = await ref.read(authProvider.notifier).login(
-      _emailController.text,
-      _passwordController.text,
-    );
+          _emailController.text,
+          _passwordController.text,
+        );
 
     if (success && mounted) {
       Navigator.of(context).pushReplacement(
@@ -56,7 +56,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -71,7 +72,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).primaryColor.withOpacity(0.3),
+                            color:
+                                Theme.of(context).primaryColor.withOpacity(0.3),
                             blurRadius: 16,
                             offset: const Offset(0, 8),
                           ),
@@ -90,17 +92,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     'Welcome Back',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                      fontSize: 32,
-                      color: const Color(0xFF121C2C),
-                    ),
+                          fontSize: 32,
+                          color: const Color(0xFF121C2C),
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Log in to continue your journey',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Colors.grey.shade600,
-                    ),
+                          color: Colors.grey.shade600,
+                        ),
                   ),
                   const SizedBox(height: 48),
                   // Minimalist Form Container
@@ -111,7 +113,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).primaryColor.withOpacity(0.04),
+                          color:
+                              Theme.of(context).primaryColor.withOpacity(0.04),
                           blurRadius: 24,
                           offset: const Offset(0, 8),
                         ),
@@ -135,7 +138,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           obscureText: !_isPasswordVisible,
                           suffixIcon: IconButton(
                             icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              _isPasswordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
                               color: Colors.grey.shade600,
                             ),
                             onPressed: () {
@@ -177,18 +182,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               borderRadius: BorderRadius.circular(16),
                             ),
                             elevation: 4,
-                            shadowColor: Theme.of(context).primaryColor.withOpacity(0.4),
+                            shadowColor:
+                                Theme.of(context).primaryColor.withOpacity(0.4),
                           ),
-                          child: authState.isLoading 
-                            ? const SizedBox(
-                                height: 24, 
-                                width: 24, 
-                                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)
-                              )
-                            : const Text(
-                                'Log In',
-                                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                              ),
+                          child: authState.isLoading
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                      color: Colors.white, strokeWidth: 2.5))
+                              : const Text(
+                                  'Log In',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
                         ),
                       ],
                     ),
@@ -205,7 +213,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const RegisterScreen()),
                           );
                         },
                         child: Text(
@@ -239,12 +248,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
-      style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
+      style:
+          const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
       decoration: InputDecoration(
         prefixIcon: Icon(icon, color: Colors.grey.shade700),
         suffixIcon: suffixIcon,
         hintText: hintText,
-        hintStyle: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+        hintStyle:
+            TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500),
         filled: true,
         fillColor: Colors.grey.shade100,
         contentPadding: const EdgeInsets.symmetric(vertical: 18),
@@ -254,7 +265,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
+          borderSide:
+              BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
         ),
       ),
     );

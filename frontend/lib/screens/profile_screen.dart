@@ -19,7 +19,8 @@ class ProfileScreen extends ConsumerWidget {
         centerTitle: true,
         title: const Text(
           'Profile',
-          style: TextStyle(color: Color(0xFF121C2C), fontWeight: FontWeight.bold),
+          style:
+              TextStyle(color: Color(0xFF121C2C), fontWeight: FontWeight.bold),
         ),
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Color(0xFF121C2C)),
@@ -41,16 +42,17 @@ class ProfileScreen extends ConsumerWidget {
               // Profile Header
               const CircleAvatar(
                 radius: 48,
-                backgroundImage: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuAoRGg6kRj97gu3ofbZx6h6wcyslpp3D_EE1bsgo_38VcvvuZHT-bzwefNDchZSI4c-wcadUygSHc4ng1P4xYmZnoBQ-f_GJ5DhRECEA86UtHvQ8YoNhOCznC06aOsMN66dh_1A_uAy88NSUPGvpYG22TbG4V3QzFFkcy6qFT6F8gA9bIEsYs69EoXnPugSF4A8O--H5Ee6HXK8GFXj6NBjhZbw35euiuAQsueCL8ZnEv6dGC6kV0Fs'),
+                backgroundImage: NetworkImage(
+                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAoRGg6kRj97gu3ofbZx6h6wcyslpp3D_EE1bsgo_38VcvvuZHT-bzwefNDchZSI4c-wcadUygSHc4ng1P4xYmZnoBQ-f_GJ5DhRECEA86UtHvQ8YoNhOCznC06aOsMN66dh_1A_uAy88NSUPGvpYG22TbG4V3QzFFkcy6qFT6F8gA9bIEsYs69EoXnPugSF4A8O--H5Ee6HXK8GFXj6NBjhZbw35euiuAQsueCL8ZnEv6dGC6kV0Fs'),
                 backgroundColor: Colors.transparent,
               ),
               const SizedBox(height: 16),
               Text(
                 user?.fullName ?? 'Traveler',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF121C2C),
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFF121C2C),
+                    ),
               ),
               const SizedBox(height: 4),
               Text(
@@ -59,16 +61,21 @@ class ProfileScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2)),
+                  border: Border.all(
+                      color: Theme.of(context)
+                          .primaryColor
+                          .withValues(alpha: 0.2)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.local_mall_outlined, size: 16, color: Theme.of(context).primaryColor),
+                    Icon(Icons.local_mall_outlined,
+                        size: 16, color: Theme.of(context).primaryColor),
                     const SizedBox(width: 4),
                     Text(
                       'Budget Traveler',
@@ -101,11 +108,16 @@ class ProfileScreen extends ConsumerWidget {
                   );
                 },
                 icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text('Logout', style: TextStyle(color: Colors.red, fontSize: 16, fontWeight: FontWeight.bold)),
+                label: const Text('Logout',
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 56),
                   side: const BorderSide(color: Colors.red, width: 2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
               ),
               const SizedBox(height: 24),
@@ -139,12 +151,21 @@ class ProfileScreen extends ConsumerWidget {
             children: [
               const Text(
                 'Profile Information',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF121C2C)),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF121C2C)),
               ),
               TextButton(
                 onPressed: () {},
-                style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: const Size(40, 30), tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                child: Text('Edit', style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor)),
+                style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: const Size(40, 30),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+                child: Text('Edit',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor)),
               )
             ],
           ),
@@ -171,12 +192,19 @@ class ProfileScreen extends ConsumerWidget {
       children: [
         Text(
           label,
-          style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.grey.shade500),
+          style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+              color: Colors.grey.shade500),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF121C2C)),
+          style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF121C2C)),
         ),
       ],
     );
@@ -207,7 +235,8 @@ class ProfileScreen extends ConsumerWidget {
               color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.location_on, color: Theme.of(context).primaryColor),
+            child:
+                Icon(Icons.location_on, color: Theme.of(context).primaryColor),
           ),
           const SizedBox(width: 16),
           const Expanded(
@@ -216,17 +245,25 @@ class ProfileScreen extends ConsumerWidget {
               children: [
                 Text(
                   'TRAVELER SEGMENT',
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.grey),
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                      color: Colors.grey),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'Frequent Budget Traveler',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF121C2C)),
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF121C2C)),
                 ),
                 SizedBox(height: 4),
                 Text(
                   'You love exploring new places without overspending.',
-                  style: TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
+                  style:
+                      TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
                 ),
               ],
             ),

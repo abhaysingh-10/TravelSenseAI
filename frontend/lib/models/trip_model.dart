@@ -31,4 +31,39 @@ class Trip {
       weatherTemp: json['weather_temp'] as int,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'destination': destination,
+      'start_date': startDate.toIso8601String(),
+      'end_date': endDate.toIso8601String(),
+      'budget': budget,
+      'spent': spent,
+      'image_url': imageUrl,
+      'weather_temp': weatherTemp,
+    };
+  }
+
+  Trip copyWith({
+    String? id,
+    String? destination,
+    DateTime? startDate,
+    DateTime? endDate,
+    double? budget,
+    double? spent,
+    String? imageUrl,
+    int? weatherTemp,
+  }) {
+    return Trip(
+      id: id ?? this.id,
+      destination: destination ?? this.destination,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      budget: budget ?? this.budget,
+      spent: spent ?? this.spent,
+      imageUrl: imageUrl ?? this.imageUrl,
+      weatherTemp: weatherTemp ?? this.weatherTemp,
+    );
+  }
 }

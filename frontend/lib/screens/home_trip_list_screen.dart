@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/trip_provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
+import 'add_edit_trip_screen.dart';
 
 class HomeTripListScreen extends ConsumerWidget {
   const HomeTripListScreen({super.key});
@@ -40,11 +41,14 @@ class HomeTripListScreen extends ConsumerWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Your Trips',
-                          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                            fontSize: 28,
-                            color: const Color(0xFF121C2C),
-                            letterSpacing: -0.5,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayLarge
+                              ?.copyWith(
+                                fontSize: 28,
+                                color: const Color(0xFF121C2C),
+                                letterSpacing: -0.5,
+                              ),
                         ),
                       ],
                     ),
@@ -56,7 +60,8 @@ class HomeTripListScreen extends ConsumerWidget {
                         shape: BoxShape.circle,
                         color: Colors.grey.shade200,
                         image: const DecorationImage(
-                          image: NetworkImage('https://lh3.googleusercontent.com/aida-public/AB6AXuDvvHgm0LfxbghV7aeVLfmnniuCK6YcqvpnSLvKp7foyQgeGd8SnzXg7mOURp1e4BM2YDUg4WdcF7-j-3Mjdb8VHaQoaDpCzds_OQnQ80DPTpYWBYaWquq_OPTeY4OkPY_U1AIDEhK_WYaUvoKlyFag_czzC6DFouGzLE6D_PLI8dkyhDFJ0uDeRsjMnZoA4EgttRNhKYNgTxjl4WAfW6b-LGh8w8bFh7rwg_HN_P34TIHeeJbG1VKr'),
+                          image: NetworkImage(
+                              'https://lh3.googleusercontent.com/aida-public/AB6AXuDvvHgm0LfxbghV7aeVLfmnniuCK6YcqvpnSLvKp7foyQgeGd8SnzXg7mOURp1e4BM2YDUg4WdcF7-j-3Mjdb8VHaQoaDpCzds_OQnQ80DPTpYWBYaWquq_OPTeY4OkPY_U1AIDEhK_WYaUvoKlyFag_czzC6DFouGzLE6D_PLI8dkyhDFJ0uDeRsjMnZoA4EgttRNhKYNgTxjl4WAfW6b-LGh8w8bFh7rwg_HN_P34TIHeeJbG1VKr'),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -98,21 +103,23 @@ class HomeTripListScreen extends ConsumerWidget {
             // Section Title
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
                 child: Text(
                   'Upcoming & Recent',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF121C2C),
-                  ),
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF121C2C),
+                      ),
                 ),
               ),
             ),
 
             // Trip List
             SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
@@ -130,7 +137,12 @@ class HomeTripListScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddEditTripScreen()),
+          );
+        },
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         elevation: 4,
@@ -183,7 +195,7 @@ class HomeTripListScreen extends ConsumerWidget {
   Widget _buildTripCard(BuildContext context, trip) {
     final progress = trip.spent / trip.budget;
     final isOverBudget = progress > 1.0;
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -237,11 +249,15 @@ class HomeTripListScreen extends ConsumerWidget {
                     ),
                     Row(
                       children: [
-                        Icon(Icons.wb_sunny_outlined, size: 14, color: Colors.grey.shade500),
+                        Icon(Icons.wb_sunny_outlined,
+                            size: 14, color: Colors.grey.shade500),
                         const SizedBox(width: 4),
                         Text(
                           '${trip.weatherTemp}°C',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade600),
+                          style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade600),
                         ),
                       ],
                     ),
@@ -251,7 +267,10 @@ class HomeTripListScreen extends ConsumerWidget {
                 // Dates
                 Text(
                   '${DateFormat('MMM d').format(trip.startDate)} - ${DateFormat('MMM d, yyyy').format(trip.endDate)}',
-                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade500,
+                      fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 16),
                 // Budget Progress
@@ -260,15 +279,19 @@ class HomeTripListScreen extends ConsumerWidget {
                   children: [
                     Text(
                       'Budget ₹${_formatCurrency(trip.budget)}',
-                      style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey.shade500,
+                          fontWeight: FontWeight.w500),
                     ),
                     Text(
                       'Spent ₹${_formatCurrency(trip.spent)}',
                       style: TextStyle(
-                        fontSize: 11, 
-                        color: isOverBudget ? Colors.red.shade400 : Colors.grey.shade700, 
-                        fontWeight: FontWeight.w600
-                      ),
+                          fontSize: 11,
+                          color: isOverBudget
+                              ? Colors.red.shade400
+                              : Colors.grey.shade700,
+                          fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
@@ -280,7 +303,9 @@ class HomeTripListScreen extends ConsumerWidget {
                     value: progress.clamp(0.0, 1.0),
                     backgroundColor: Colors.grey.shade100,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      isOverBudget ? Colors.red.shade400 : Theme.of(context).primaryColor,
+                      isOverBudget
+                          ? Colors.red.shade400
+                          : Theme.of(context).primaryColor,
                     ),
                     minHeight: 6,
                   ),
