@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import 'add_edit_trip_screen.dart';
 import 'trip_detail_screen.dart';
+import 'recommendations_screen.dart';
 
 class HomeTripListScreen extends ConsumerWidget {
   const HomeTripListScreen({super.key});
@@ -82,8 +83,98 @@ class HomeTripListScreen extends ConsumerWidget {
               ),
             ),
 
-            // Spacing
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            // AI Recommendations Banner
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 8.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const RecommendationsScreen()),
+                    );
+                  },
+                  child: Container(
+                    height: 120,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.05),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                      image: const DecorationImage(
+                        image: NetworkImage('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=800&auto=format&fit=crop'), 
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    clipBehavior: Clip.antiAlias,
+                    child: Stack(
+                      children: [
+                        // Dark overlay for text readability
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.8),
+                                Colors.black.withValues(alpha: 0.2),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Content
+                        Padding(
+                          padding: const EdgeInsets.all(24),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      'AI Recommendations',
+                                      style: TextStyle(
+                                        color: Colors.white, 
+                                        fontSize: 18, 
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: -0.5,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      'Discover where to go next based on your travel style',
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.8), 
+                                        fontSize: 13, 
+                                        height: 1.4,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 16),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
 
             // Section Title
             SliverToBoxAdapter(

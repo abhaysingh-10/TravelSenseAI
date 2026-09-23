@@ -182,7 +182,6 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
                             'AI PREDICTION',
                             style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1.2),
                           ),
-                          Icon(Icons.auto_awesome, color: Colors.amber.shade300, size: 20),
                         ],
                       ),
                       const SizedBox(height: 24),
