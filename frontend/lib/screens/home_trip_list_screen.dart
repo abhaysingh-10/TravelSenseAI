@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/trip_provider.dart';
+import '../providers/expense_provider.dart';
 import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import 'add_edit_trip_screen.dart';
@@ -12,29 +13,31 @@ class HomeTripListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final trips = ref.watch(tripListProvider);
+    final allExpenses = ref.watch(expenseListProvider);
     final authState = ref.watch(authProvider);
     final user = authState.user;
 
+    final totalSpent = allExpenses.fold(0.0, (sum, exp) => sum + exp.amount);
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FF), // Very soft background
+      backgroundColor: const Color(0xFFF9F9FF),
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // App Bar Area (Minimal)
+            // App Bar Section
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+                padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Greeting
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hello, ${user?.fullName.split(' ').first ?? 'Traveler'}!',
+                          'Hello, ${user?.fullName.split(' ').first ?? 'User'}!',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 14,
                             color: Colors.grey.shade600,
                             fontWeight: FontWeight.w500,
                           ),
@@ -42,37 +45,24 @@ class HomeTripListScreen extends ConsumerWidget {
                         const SizedBox(height: 4),
                         Text(
                           'Your Trips',
-                          style: Theme.of(context)
-                              .textTheme
-                              .displayLarge
-                              ?.copyWith(
+                          style: Theme.of(context).textTheme.displayLarge?.copyWith(
                                 fontSize: 28,
                                 color: const Color(0xFF121C2C),
-                                letterSpacing: -0.5,
                               ),
                         ),
                       ],
                     ),
-                    // Profile Image
-                    Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.grey.shade200,
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuDvvHgm0LfxbghV7aeVLfmnniuCK6YcqvpnSLvKp7foyQgeGd8SnzXg7mOURp1e4BM2YDUg4WdcF7-j-3Mjdb8VHaQoaDpCzds_OQnQ80DPTpYWBYaWquq_OPTeY4OkPY_U1AIDEhK_WYaUvoKlyFag_czzC6DFouGzLE6D_PLI8dkyhDFJ0uDeRsjMnZoA4EgttRNhKYNgTxjl4WAfW6b-LGh8w8bFh7rwg_HN_P34TIHeeJbG1VKr'),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: Colors.grey.shade200,
+                      child: Icon(Icons.person, color: Colors.grey.shade400, size: 28),
                     ),
                   ],
                 ),
               ),
             ),
 
-            // Stats Row
+            // Stats Section
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -80,18 +70,12 @@ class HomeTripListScreen extends ConsumerWidget {
                   children: [
                     Expanded(
                       child: _buildStatCard(
-                        context,
-                        'Total Trips',
-                        trips.length.toString(),
-                      ),
+                          context, 'Total Trips', trips.length.toString()),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: _buildStatCard(
-                        context,
-                        'Total Spent',
-                        '₹${_formatCurrency(trips.fold(0, (sum, trip) => sum + trip.spent))}',
-                      ),
+                      child: _buildStatCard(context, 'Total Spent',
+                          '₹${_formatCurrency(totalSpent)}'),
                     ),
                   ],
                 ),
@@ -127,7 +111,7 @@ class HomeTripListScreen extends ConsumerWidget {
                     final trip = trips[index];
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 20.0),
-                      child: _buildTripCard(context, trip),
+                      child: _buildTripCard(context, ref, trip),
                     );
                   },
                   childCount: trips.length,
@@ -193,8 +177,11 @@ class HomeTripListScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTripCard(BuildContext context, trip) {
-    final progress = trip.spent / trip.budget;
+  Widget _buildTripCard(BuildContext context, WidgetRef ref, trip) {
+    final expenses = ref.watch(tripExpensesProvider(trip.id));
+    final double actualSpent = expenses.fold(0.0, (sum, exp) => sum + exp.amount);
+
+    final progress = actualSpent / trip.budget;
     final isOverBudget = progress > 1.0;
 
     return GestureDetector(
@@ -288,7 +275,7 @@ class HomeTripListScreen extends ConsumerWidget {
                         style: TextStyle(fontSize: 11, color: Colors.grey.shade500, fontWeight: FontWeight.w500),
                       ),
                       Text(
-                        'Spent ₹${_formatCurrency(trip.spent)}',
+                        'Spent ₹${_formatCurrency(actualSpent)}',
                         style: TextStyle(
                           fontSize: 11, 
                           color: isOverBudget ? Colors.red.shade400 : Colors.grey.shade700, 

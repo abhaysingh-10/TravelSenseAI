@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../models/trip_model.dart';
+import '../models/expense_model.dart';
 import '../providers/trip_provider.dart';
+import '../providers/expense_provider.dart';
 import 'add_edit_trip_screen.dart';
+import 'add_edit_expense_screen.dart';
 
 class TripDetailScreen extends ConsumerWidget {
   final Trip trip;
@@ -12,28 +15,32 @@ class TripDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-   
+    // Watch trips
     final trips = ref.watch(tripListProvider);
-   
     final currentTripIndex = trips.indexWhere((t) => t.id == trip.id);
     
     if (currentTripIndex == -1) {
-      // Trip was deleted, pop the screen
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (Navigator.canPop(context)) {
-          Navigator.pop(context);
-        }
+        if (Navigator.canPop(context)) Navigator.pop(context);
       });
       return const Scaffold(backgroundColor: Colors.white, body: Center(child: CircularProgressIndicator()));
     }
 
     final currentTrip = trips[currentTripIndex];
-    final progress = currentTrip.spent / currentTrip.budget;
+    
+    // Watch expenses for this trip
+    final expenses = ref.watch(tripExpensesProvider(currentTrip.id));
+    
+    // Dynamically calculate spent amount from actual expenses
+    final double actualSpent = expenses.fold(0.0, (sum, exp) => sum + exp.amount);
+    
+    final progress = actualSpent / currentTrip.budget;
     final isOverBudget = progress > 1.0;
     final formatCurrency = NumberFormat('#,##0');
+    final dateFormat = DateFormat('MMM d, yyyy');
 
     return Scaffold(
-      backgroundColor: Colors.white, // Ultra minimal pure white
+      backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -114,14 +121,14 @@ class TripDetailScreen extends ConsumerWidget {
                             fontSize: 32,
                             fontWeight: FontWeight.w800,
                             letterSpacing: -1.0,
-                            color: Color(0xFF111418), // Very dark grey, not pure black
+                            color: Color(0xFF111418),
                           ),
                         ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade100, // Flat soft background, no shadow
+                          color: Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: Row(
@@ -130,11 +137,7 @@ class TripDetailScreen extends ConsumerWidget {
                             const SizedBox(width: 6),
                             Text(
                               '${currentTrip.weatherTemp}°C',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                color: Colors.grey.shade800,
-                                fontSize: 13,
-                              ),
+                              style: TextStyle(fontWeight: FontWeight.w700, color: Colors.grey.shade800, fontSize: 13),
                             ),
                           ],
                         ),
@@ -147,29 +150,21 @@ class TripDetailScreen extends ConsumerWidget {
                       Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey.shade400),
                       const SizedBox(width: 8),
                       Text(
-                        '${DateFormat('MMM d').format(currentTrip.startDate)} - ${DateFormat('MMM d, yyyy').format(currentTrip.endDate)}',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey.shade600,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        '${DateFormat('MMM d').format(currentTrip.startDate)} - ${dateFormat.format(currentTrip.endDate)}',
+                        style: TextStyle(fontSize: 15, color: Colors.grey.shade600, fontWeight: FontWeight.w500),
                       ),
                     ],
                   ),
                   const SizedBox(height: 40),
                   
-                  // Section Title
-                  Text(
+                  // Budget Overview Title
+                  const Text(
                     'Budget Overview',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: const Color(0xFF111418),
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF111418)),
                   ),
                   const SizedBox(height: 16),
                   
-                  // Minimal Budget Card (Border, no shadow)
+                  // Budget Card
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
@@ -186,41 +181,18 @@ class TripDetailScreen extends ConsumerWidget {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'TOTAL BUDGET', 
-                                  style: TextStyle(
-                                    fontSize: 10, 
-                                    fontWeight: FontWeight.bold, 
-                                    letterSpacing: 1.2, 
-                                    color: Colors.grey.shade500
-                                  )
-                                ),
+                                Text('TOTAL BUDGET', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade500)),
                                 const SizedBox(height: 8),
-                                Text(
-                                  '₹${formatCurrency.format(currentTrip.budget)}', 
-                                  style: const TextStyle(
-                                    fontSize: 22, 
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF111418),
-                                  )
-                                ),
+                                Text('₹${formatCurrency.format(currentTrip.budget)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Color(0xFF111418))),
                               ],
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
-                                  'SPENT', 
-                                  style: TextStyle(
-                                    fontSize: 10, 
-                                    fontWeight: FontWeight.bold, 
-                                    letterSpacing: 1.2, 
-                                    color: Colors.grey.shade500
-                                  )
-                                ),
+                                Text('SPENT', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.grey.shade500)),
                                 const SizedBox(height: 8),
                                 Text(
-                                  '₹${formatCurrency.format(currentTrip.spent)}', 
+                                  '₹${formatCurrency.format(actualSpent)}', 
                                   style: TextStyle(
                                     fontSize: 22, 
                                     fontWeight: FontWeight.w800,
@@ -251,7 +223,7 @@ class TripDetailScreen extends ConsumerWidget {
                                 Icon(Icons.warning_amber_rounded, size: 16, color: Colors.red.shade400),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'Over budget by ₹${formatCurrency.format(currentTrip.spent - currentTrip.budget)}',
+                                  'Over budget by ₹${formatCurrency.format(actualSpent - currentTrip.budget)}',
                                   style: TextStyle(color: Colors.red.shade400, fontSize: 13, fontWeight: FontWeight.w600),
                                 ),
                               ],
@@ -261,32 +233,133 @@ class TripDetailScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 40),
-                  // Placeholder for next task
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 24),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.grey.shade100),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.receipt_long_outlined, size: 32, color: Colors.grey.shade300),
-                        const SizedBox(height: 12),
-                        Text(
-                          'Expenses list will appear here',
-                          style: TextStyle(color: Colors.grey.shade400, fontSize: 14, fontWeight: FontWeight.w500),
+                  
+                  // Expenses Section Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Recent Expenses',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF111418)),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddEditExpenseScreen(tripId: currentTrip.id),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.add, size: 16, color: Theme.of(context).primaryColor),
+                        label: Text('Add', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  
+                  // Expenses List
+                  expenses.isEmpty 
+                    ? Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: Colors.grey.shade100),
                         ),
-                      ],
-                    ),
-                  )
+                        child: Column(
+                          children: [
+                            Icon(Icons.receipt_long_outlined, size: 32, color: Colors.grey.shade300),
+                            const SizedBox(height: 12),
+                            Text(
+                              'No expenses added yet',
+                              style: TextStyle(color: Colors.grey.shade400, fontSize: 14, fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: expenses.length,
+                        separatorBuilder: (context, index) => const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          // Reverse list to show newest first
+                          final exp = expenses[expenses.length - 1 - index];
+                          return _buildExpenseCard(context, ref, exp, formatCurrency, dateFormat);
+                        },
+                      ),
                 ],
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildExpenseCard(BuildContext context, WidgetRef ref, Expense exp, NumberFormat formatCurrency, DateFormat dateFormat) {
+    IconData getCategoryIcon(String category) {
+      switch (category) {
+        case 'Flight': return Icons.flight_takeoff;
+        case 'Transport': return Icons.directions_car_outlined;
+        case 'Accommodation': return Icons.hotel_outlined;
+        case 'Food': return Icons.restaurant_outlined;
+        case 'Activities': return Icons.local_activity_outlined;
+        default: return Icons.receipt_outlined;
+      }
+    }
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => AddEditExpenseScreen(tripId: exp.tripId, expense: exp),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.grey.shade100),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(getCategoryIcon(exp.category), color: Colors.grey.shade700, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exp.title,
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Color(0xFF111418)),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    dateFormat.format(exp.date),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              '₹${formatCurrency.format(exp.amount)}',
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF111418)),
+            ),
+          ],
+        ),
       ),
     );
   }
