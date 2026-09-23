@@ -75,10 +75,19 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
   }
 
   void _saveExpense() {
-    // Task 1: Basic save logic. (Task 2 will add strict validation here later)
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    if (_selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a date for the expense')),
+      );
+      return;
+    }
+
     final title = _titleController.text.trim();
     final amount = double.tryParse(_amountController.text.trim()) ?? 0.0;
-    final dateToSave = _selectedDate ?? DateTime.now();
 
     if (widget.expense == null) {
       // Add
@@ -87,7 +96,7 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
         title,
         amount,
         _selectedCategory,
-        dateToSave,
+        _selectedDate!,
       );
     } else {
       // Edit
@@ -95,7 +104,7 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
         title: title,
         amount: amount,
         category: _selectedCategory,
-        date: dateToSave,
+        date: _selectedDate!,
       );
       ref.read(expenseListProvider.notifier).updateExpense(updated);
     }
@@ -130,14 +139,34 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
                 CustomInputField(
                   labelText: 'Expense Title',
                   controller: _titleController,
-                  // No strict validator yet (Task 2)
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter an expense title';
+                    }
+                    if (value.trim().length < 2) {
+                      return 'Title must be at least 2 characters';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 CustomInputField(
                   labelText: 'Amount (₹)',
                   controller: _amountController,
-                  keyboardType: TextInputType.number,
-                  // No strict validator yet (Task 2)
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter the amount';
+                    }
+                    final amount = double.tryParse(value.trim());
+                    if (amount == null) {
+                      return 'Please enter a valid number';
+                    }
+                    if (amount <= 0) {
+                      return 'Amount must be greater than zero';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 
