@@ -228,10 +228,13 @@ class HomeTripListScreen extends ConsumerWidget {
               height: 100,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
-                image: DecorationImage(
-                  image: NetworkImage(trip.imageUrl),
-                  fit: BoxFit.cover,
-                ),
+                color: Colors.grey.shade100,
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.network(
+                trip.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Icon(Icons.image_not_supported, color: Colors.grey.shade400),
               ),
             ),
             const SizedBox(width: 16),

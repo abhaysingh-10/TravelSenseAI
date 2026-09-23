@@ -12,19 +12,19 @@ class TripDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+   
     final trips = ref.watch(tripListProvider);
-    
+   
     final currentTripIndex = trips.indexWhere((t) => t.id == trip.id);
     
     if (currentTripIndex == -1) {
-
-
+      // Trip was deleted, pop the screen
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       });
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(backgroundColor: Colors.white, body: Center(child: CircularProgressIndicator()));
     }
 
     final currentTrip = trips[currentTripIndex];
@@ -33,59 +33,73 @@ class TripDetailScreen extends ConsumerWidget {
     final formatCurrency = NumberFormat('#,##0');
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FF),
+      backgroundColor: Colors.white, // Ultra minimal pure white
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            expandedHeight: 250.0,
+            expandedHeight: 300.0,
             pinned: true,
-            iconTheme: const IconThemeData(color: Colors.white),
+            elevation: 0,
+            backgroundColor: Colors.white,
+            leading: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: CircleAvatar(
+                backgroundColor: Colors.black.withValues(alpha: 0.3),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Colors.white),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
+            ),
             actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddEditTripScreen(trip: currentTrip),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withValues(alpha: 0.3),
+                  child: IconButton(
+                    icon: const Icon(Icons.edit, size: 18, color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddEditTripScreen(trip: currentTrip),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: CircleAvatar(
+                  backgroundColor: Colors.black.withValues(alpha: 0.3),
+                  child: IconButton(
+                    icon: const Icon(Icons.delete_outline, size: 18, color: Colors.white),
+                    onPressed: () => _showDeleteConfirmation(context, ref, currentTrip),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.network(
+                currentTrip.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: Colors.grey.shade200,
+                    child: Center(
+                      child: Icon(Icons.image_not_supported_outlined, color: Colors.grey.shade400, size: 40),
                     ),
                   );
                 },
-              ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                onPressed: () => _showDeleteConfirmation(context, ref, currentTrip),
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.network(
-                    currentTrip.imageUrl,
-                    fit: BoxFit.cover,
-                  ),
-                  // Gradient overlay for text readability
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.black.withValues(alpha: 0.4),
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.6),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 24.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -96,60 +110,72 @@ class TripDetailScreen extends ConsumerWidget {
                       Expanded(
                         child: Text(
                           currentTrip.destination,
-                          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                            fontSize: 28,
-                            color: const Color(0xFF121C2C),
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1.0,
+                            color: Color(0xFF111418), // Very dark grey, not pure black
                           ),
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 10,
-                            )
-                          ],
+                          color: Colors.grey.shade100, // Flat soft background, no shadow
+                          borderRadius: BorderRadius.circular(24),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.wb_sunny_outlined, size: 16, color: Colors.orange.shade400),
-                            const SizedBox(width: 4),
+                            Icon(Icons.wb_sunny_rounded, size: 16, color: Colors.orange.shade400),
+                            const SizedBox(width: 6),
                             Text(
                               '${currentTrip.weatherTemp}°C',
-                              style: const TextStyle(fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                color: Colors.grey.shade800,
+                                fontSize: 13,
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Icon(Icons.calendar_today_outlined, size: 16, color: Colors.grey.shade400),
+                      const SizedBox(width: 8),
+                      Text(
+                        '${DateFormat('MMM d').format(currentTrip.startDate)} - ${DateFormat('MMM d, yyyy').format(currentTrip.endDate)}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.grey.shade600,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 40),
+                  
+                  // Section Title
                   Text(
-                    '${DateFormat('MMM d').format(currentTrip.startDate)} - ${DateFormat('MMM d, yyyy').format(currentTrip.endDate)}',
+                    'Budget Overview',
                     style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF111418),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  // Budget Card
+                  const SizedBox(height: 16),
+                  
+                  // Minimal Budget Card (Border, no shadow)
                   Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade200),
                       borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.02),
-                          blurRadius: 16,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -157,47 +183,57 @@ class TripDetailScreen extends ConsumerWidget {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Budget Overview',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Icon(Icons.account_balance_wallet_outlined, color: Theme.of(context).primaryColor),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Total Budget', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                                const SizedBox(height: 4),
-                                Text('₹${formatCurrency.format(currentTrip.budget)}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                                Text(
+                                  'TOTAL BUDGET', 
+                                  style: TextStyle(
+                                    fontSize: 10, 
+                                    fontWeight: FontWeight.bold, 
+                                    letterSpacing: 1.2, 
+                                    color: Colors.grey.shade500
+                                  )
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '₹${formatCurrency.format(currentTrip.budget)}', 
+                                  style: const TextStyle(
+                                    fontSize: 22, 
+                                    fontWeight: FontWeight.w800,
+                                    color: Color(0xFF111418),
+                                  )
+                                ),
                               ],
                             ),
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text('Spent', style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
-                                const SizedBox(height: 4),
+                                Text(
+                                  'SPENT', 
+                                  style: TextStyle(
+                                    fontSize: 10, 
+                                    fontWeight: FontWeight.bold, 
+                                    letterSpacing: 1.2, 
+                                    color: Colors.grey.shade500
+                                  )
+                                ),
+                                const SizedBox(height: 8),
                                 Text(
                                   '₹${formatCurrency.format(currentTrip.spent)}', 
                                   style: TextStyle(
-                                    fontSize: 18, 
-                                    fontWeight: FontWeight.bold,
-                                    color: isOverBudget ? Colors.red.shade400 : Colors.black87,
+                                    fontSize: 22, 
+                                    fontWeight: FontWeight.w800,
+                                    color: isOverBudget ? Colors.red.shade400 : Theme.of(context).primaryColor,
                                   ),
                                 ),
                               ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                           child: LinearProgressIndicator(
                             value: progress.clamp(0.0, 1.0),
                             backgroundColor: Colors.grey.shade100,
@@ -209,21 +245,41 @@ class TripDetailScreen extends ConsumerWidget {
                         ),
                         if (isOverBudget)
                           Padding(
-                            padding: const EdgeInsets.only(top: 12.0),
-                            child: Text(
-                              'You are over budget by ₹${formatCurrency.format(currentTrip.spent - currentTrip.budget)}',
-                              style: TextStyle(color: Colors.red.shade400, fontSize: 12, fontWeight: FontWeight.w600),
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: Row(
+                              children: [
+                                Icon(Icons.warning_amber_rounded, size: 16, color: Colors.red.shade400),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Over budget by ₹${formatCurrency.format(currentTrip.spent - currentTrip.budget)}',
+                                  style: TextStyle(color: Colors.red.shade400, fontSize: 13, fontWeight: FontWeight.w600),
+                                ),
+                              ],
                             ),
                           ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  // Future expansion for expenses/itinerary
-                  Center(
-                    child: Text(
-                      'Expenses & Itinerary coming soon...',
-                      style: TextStyle(color: Colors.grey.shade400),
+                  const SizedBox(height: 40),
+                  // Placeholder for next task
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.grey.shade100),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.receipt_long_outlined, size: 32, color: Colors.grey.shade300),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Expenses list will appear here',
+                          style: TextStyle(color: Colors.grey.shade400, fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
                   )
                 ],
@@ -239,21 +295,20 @@ class TripDetailScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Trip'),
+        title: const Text('Delete Trip', style: TextStyle(fontWeight: FontWeight.bold)),
         content: const Text('Are you sure you want to delete this trip? This action cannot be undone.'),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600)),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
           ),
           TextButton(
             onPressed: () {
               ref.read(tripListProvider.notifier).deleteTrip(trip.id);
-              Navigator.pop(ctx); // Close dialog
-              // The screen itself will pop automatically because currentTripIndex will be -1
+              Navigator.pop(ctx);
             },
-            child: Text('Delete', style: TextStyle(color: Colors.red.shade400)),
+            child: Text('Delete', style: TextStyle(color: Colors.red.shade400, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
