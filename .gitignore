@@ -60,3 +60,4 @@ __pycache__/
 venv/
 env/
 .venv/
+frontend/build/
