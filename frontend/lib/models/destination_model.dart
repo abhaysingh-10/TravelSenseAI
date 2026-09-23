@@ -5,6 +5,7 @@ class Destination {
   final String imageUrl;
   final double matchScore;
   final String reason;
+  
   final double estimatedBudget;
   final int durationDays;
 
