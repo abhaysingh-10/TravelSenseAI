@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from database import Base  # Importing the Base we just made
+from database import Base  
 
 class User(Base):
     __tablename__ = "users"
@@ -11,7 +11,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    # This creates a magic link so we can easily find a user's trips
+   
     trips = relationship("Trip", back_populates="owner")
     expenses = relationship("Expense", back_populates="owner")
 
