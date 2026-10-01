@@ -13,3 +13,29 @@ class UserCreate(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+# -----------------
+# TRIP SCHEMAS
+# -----------------
+
+from datetime import date
+from typing import Optional
+
+class TripBase(BaseModel):
+    destination: str
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None
+
+class TripCreate(TripBase):
+    pass
+
+class TripUpdate(TripBase):
+    pass
+
+class TripOut(TripBase):
+    id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
+        from_attributes = True # for Pydantic V2 compatibility
