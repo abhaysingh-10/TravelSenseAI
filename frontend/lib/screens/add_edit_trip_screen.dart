@@ -83,7 +83,7 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
     }
   }
 
-  void _saveTrip() {
+  Future<void> _saveTrip() async {
     if (_formKey.currentState!.validate()) {
       if (_startDate == null || _endDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
