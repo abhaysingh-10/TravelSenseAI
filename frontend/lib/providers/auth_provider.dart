@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/user_model.dart';
 import '../services/api_service.dart';
+import 'trip_provider.dart';
+import 'expense_provider.dart';
 
 class AuthNotifier extends Notifier<AuthState> {
   @override
@@ -104,6 +106,9 @@ class AuthNotifier extends Notifier<AuthState> {
   Future<void> logout() async {
     await ApiService.deleteToken();
     state = AuthState();
+    // Clear user data from memory so next login starts fresh
+    ref.invalidate(tripListProvider);
+    ref.invalidate(expenseListProvider);
   }
 }
 
