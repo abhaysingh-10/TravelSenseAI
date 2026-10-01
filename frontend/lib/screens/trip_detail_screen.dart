@@ -41,8 +41,13 @@ class TripDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: CustomScrollView(
-        slivers: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(tripListProvider.notifier).fetchTrips();
+          await ref.read(expenseListProvider.notifier).fetchExpenses();
+        },
+        child: CustomScrollView(
+          slivers: [
           SliverAppBar(
             expandedHeight: 300.0,
             pinned: true,
@@ -296,6 +301,7 @@ class TripDetailScreen extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 
@@ -377,9 +383,19 @@ class TripDetailScreen extends ConsumerWidget {
             child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
           ),
           TextButton(
-            onPressed: () {
-              ref.read(tripListProvider.notifier).deleteTrip(trip.id);
-              Navigator.pop(ctx);
+            onPressed: () async {
+              final success = await ref.read(tripListProvider.notifier).deleteTrip(trip.id);
+              if (success) {
+                if (ctx.mounted) Navigator.pop(ctx); // Close dialog
+                if (context.mounted) Navigator.pop(context); // Close detail screen
+              } else {
+                if (ctx.mounted) Navigator.pop(ctx);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to delete trip. Check your connection.')),
+                  );
+                }
+              }
             },
             child: Text('Delete', style: TextStyle(color: Colors.red.shade400, fontWeight: FontWeight.w600)),
           ),

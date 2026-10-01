@@ -30,7 +30,7 @@ class TripListNotifier extends Notifier<List<Trip>> {
     }
   }
 
-  Future<void> addTrip(
+  Future<bool> addTrip(
       String destination, DateTime startDate, DateTime endDate, double budget) async {
     
     final Map<String, dynamic> body = {
@@ -50,13 +50,16 @@ class TripListNotifier extends Notifier<List<Trip>> {
         json['id'] = json['id'].toString();
         final newTrip = Trip.fromJson(json);
         state = [...state, newTrip];
+        return true;
       }
+      return false;
     } catch (e) {
       print('Error adding trip: $e');
+      return false;
     }
   }
 
-  Future<void> updateTrip(Trip updatedTrip) async {
+  Future<bool> updateTrip(Trip updatedTrip) async {
     final Map<String, dynamic> body = {
       'destination': updatedTrip.destination,
       'start_date': updatedTrip.startDate.toIso8601String().split('T')[0],
@@ -74,20 +77,26 @@ class TripListNotifier extends Notifier<List<Trip>> {
           for (final trip in state)
             if (trip.id == updatedTrip.id) updatedTrip else trip
         ];
+        return true;
       }
+      return false;
     } catch (e) {
       print('Error updating trip: $e');
+      return false;
     }
   }
 
-  Future<void> deleteTrip(String tripId) async {
+  Future<bool> deleteTrip(String tripId) async {
     try {
       final response = await ApiService.deleteRequest('/trips/$tripId');
       if (response.statusCode == 200) {
         state = state.where((trip) => trip.id != tripId).toList();
+        return true;
       }
+      return false;
     } catch (e) {
       print('Error deleting trip: $e');
+      return false;
     }
   }
 }

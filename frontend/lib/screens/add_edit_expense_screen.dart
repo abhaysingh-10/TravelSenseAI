@@ -74,7 +74,7 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
     }
   }
 
-  void _saveExpense() {
+  Future<void> _saveExpense() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -89,9 +89,10 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
     final title = _titleController.text.trim();
     final amount = double.tryParse(_amountController.text.trim()) ?? 0.0;
 
+    bool success = false;
     if (widget.expense == null) {
       // Add
-      ref.read(expenseListProvider.notifier).addExpense(
+      success = await ref.read(expenseListProvider.notifier).addExpense(
         widget.tripId,
         title,
         amount,
@@ -106,10 +107,18 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
         category: _selectedCategory,
         date: _selectedDate!,
       );
-      ref.read(expenseListProvider.notifier).updateExpense(updated);
+      success = await ref.read(expenseListProvider.notifier).updateExpense(updated);
     }
 
-    Navigator.pop(context);
+    if (success) {
+      if (mounted) Navigator.pop(context);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to save expense. Check your connection.')),
+        );
+      }
+    }
   }
 
   @override

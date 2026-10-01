@@ -104,9 +104,10 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
       final destination = _destinationController.text.trim();
       final budget = double.tryParse(_budgetController.text.trim()) ?? 0.0;
 
+      bool success = false;
       if (widget.trip == null) {
         // Add new
-        ref.read(tripListProvider.notifier).addTrip(
+        success = await ref.read(tripListProvider.notifier).addTrip(
               destination,
               _startDate!,
               _endDate!,
@@ -120,10 +121,18 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
           endDate: _endDate,
           budget: budget,
         );
-        ref.read(tripListProvider.notifier).updateTrip(updatedTrip);
+        success = await ref.read(tripListProvider.notifier).updateTrip(updatedTrip);
       }
 
-      Navigator.pop(context);
+      if (success) {
+        if (context.mounted) Navigator.pop(context);
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to save trip. Check your connection.')),
+          );
+        }
+      }
     }
   }
 

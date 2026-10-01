@@ -23,109 +23,115 @@ class HomeTripListScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9FF),
       body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            // App Bar Section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Hello, ${user?.fullName.split(' ').first ?? 'User'}!',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                            fontWeight: FontWeight.w500,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(tripListProvider.notifier).fetchTrips();
+            await ref.read(expenseListProvider.notifier).fetchExpenses();
+          },
+          child: CustomScrollView(
+            slivers: [
+              // App Bar Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 24.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Hello, ${user?.fullName.split(' ').first ?? 'User'}!',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade600,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Your Trips',
-                          style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                fontSize: 28,
-                                color: const Color(0xFF121C2C),
-                              ),
-                        ),
-                      ],
-                    ),
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundColor: Colors.grey.shade200,
-                      child: Icon(Icons.person, color: Colors.grey.shade400, size: 28),
-                    ),
-                  ],
+                          const SizedBox(height: 4),
+                          Text(
+                            'Your Trips',
+                            style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                  fontSize: 28,
+                                  color: const Color(0xFF121C2C),
+                                ),
+                          ),
+                        ],
+                      ),
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.grey.shade200,
+                        child: Icon(Icons.person, color: Colors.grey.shade400, size: 28),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // Stats Section
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _buildStatCard(
-                          context, 'Total Trips', trips.length.toString()),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildStatCard(context, 'Total Spent',
-                          '₹${_formatCurrency(totalSpent)}'),
-                    ),
-                  ],
+              // Stats Section
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                            context, 'Total Trips', trips.length.toString()),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: _buildStatCard(context, 'Total Spent',
+                            '₹${_formatCurrency(totalSpent)}'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            // AI Recommendations Carousel
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.only(top: 32.0, bottom: 8.0),
-                child: AIPicksCarousel(),
+              // AI Recommendations Carousel
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(top: 32.0, bottom: 8.0),
+                  child: AIPicksCarousel(),
+                ),
               ),
-            ),
 
 
-            // Section Title
-            SliverToBoxAdapter(
-              child: Padding(
+              // Section Title
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Text(
+                    'Upcoming & Recent',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: const Color(0xFF121C2C),
+                        ),
+                  ),
+                ),
+              ),
+
+              // Trip List
+              SliverPadding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                child: Text(
-                  'Upcoming & Recent',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: const Color(0xFF121C2C),
-                      ),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final trip = trips[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 20.0),
+                        child: _buildTripCard(context, ref, trip),
+                      );
+                    },
+                    childCount: trips.length,
+                  ),
                 ),
               ),
-            ),
-
-            // Trip List
-            SliverPadding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final trip = trips[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: _buildTripCard(context, ref, trip),
-                    );
-                  },
-                  childCount: trips.length,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

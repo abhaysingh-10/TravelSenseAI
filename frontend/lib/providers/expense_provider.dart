@@ -26,7 +26,7 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
     }
   }
 
-  Future<void> addExpense(String tripId, String title, double amount, String category, DateTime date) async {
+  Future<bool> addExpense(String tripId, String title, double amount, String category, DateTime date) async {
     final Map<String, dynamic> body = {
       'trip_id': int.parse(tripId), // backend expects int
       'title': title,
@@ -43,13 +43,16 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
         json['trip_id'] = json['trip_id'].toString();
         final newExpense = Expense.fromJson(json);
         state = [...state, newExpense];
+        return true;
       }
+      return false;
     } catch (e) {
       print('Error adding expense: $e');
+      return false;
     }
   }
 
-  Future<void> updateExpense(Expense updatedExpense) async {
+  Future<bool> updateExpense(Expense updatedExpense) async {
     final Map<String, dynamic> body = {
       'trip_id': int.parse(updatedExpense.tripId),
       'title': updatedExpense.title,
@@ -65,20 +68,26 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
           for (final exp in state)
             if (exp.id == updatedExpense.id) updatedExpense else exp
         ];
+        return true;
       }
+      return false;
     } catch (e) {
       print('Error updating expense: $e');
+      return false;
     }
   }
 
-  Future<void> deleteExpense(String id) async {
+  Future<bool> deleteExpense(String id) async {
     try {
       final response = await ApiService.deleteRequest('/expenses/$id');
       if (response.statusCode == 200) {
         state = state.where((exp) => exp.id != id).toList();
+        return true;
       }
+      return false;
     } catch (e) {
       print('Error deleting expense: $e');
+      return false;
     }
   }
 }
