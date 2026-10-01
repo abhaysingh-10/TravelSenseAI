@@ -40,7 +40,7 @@ class Expense(Base):
     id = Column(Integer, primary_key=True, index=True)
     amount = Column(Float, nullable=False)
     category = Column(String, nullable=False)
-    description = Column(String, nullable=True)
+    title = Column(String, nullable=True)
     date = Column(Date, nullable=True)
     
     trip_id = Column(Integer, ForeignKey("trips.id"), nullable=True)

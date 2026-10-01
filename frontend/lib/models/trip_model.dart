@@ -25,10 +25,10 @@ class Trip {
       destination: json['destination'],
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
-      budget: (json['budget'] as num).toDouble(),
-      spent: (json['spent'] as num).toDouble(),
-      imageUrl: json['image_url'],
-      weatherTemp: json['weather_temp'] as int,
+      budget: (json['budget'] as num?)?.toDouble() ?? 0.0,
+      spent: (json['spent'] as num?)?.toDouble() ?? 0.0,
+      imageUrl: json['image_url'] ?? '',
+      weatherTemp: (json['weather_temp'] as int?) ?? 25,
     );
   }
 

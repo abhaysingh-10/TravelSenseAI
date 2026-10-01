@@ -1,41 +1,85 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import '../models/expense_model.dart';
-
-const uuid = Uuid();
+import '../services/api_service.dart';
 
 class ExpenseListNotifier extends Notifier<List<Expense>> {
   @override
   List<Expense> build() {
-    // Dummy expenses mapped to the dummy trips (trip id '1', '2', '3')
-    return [
-      Expense(id: 'e1', tripId: '1', title: 'Flight to Kullu', amount: 4500, category: 'Flight', date: DateTime(2024, 5, 10)),
-      Expense(id: 'e2', tripId: '1', title: 'Hotel booking', amount: 3000, category: 'Accommodation', date: DateTime(2024, 5, 10)),
-      Expense(id: 'e3', tripId: '2', title: 'Seafood dinner', amount: 1500, category: 'Food', date: DateTime(2024, 4, 21)),
-    ];
+    fetchExpenses();
+    return [];
   }
 
-  void addExpense(String tripId, String title, double amount, String category, DateTime date) {
-    final newExpense = Expense(
-      id: uuid.v4(),
-      tripId: tripId,
-      title: title,
-      amount: amount,
-      category: category,
-      date: date,
-    );
-    state = [...state, newExpense];
+  Future<void> fetchExpenses() async {
+    try {
+      final response = await ApiService.getRequest('/expenses');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        state = data.map((json) {
+          json['id'] = json['id'].toString();
+          json['trip_id'] = json['trip_id'].toString();
+          return Expense.fromJson(json);
+        }).toList();
+      }
+    } catch (e) {
+      print('Error fetching expenses: $e');
+    }
   }
 
-  void updateExpense(Expense updatedExpense) {
-    state = [
-      for (final exp in state)
-        if (exp.id == updatedExpense.id) updatedExpense else exp
-    ];
+  Future<void> addExpense(String tripId, String title, double amount, String category, DateTime date) async {
+    final Map<String, dynamic> body = {
+      'trip_id': int.parse(tripId), // backend expects int
+      'title': title,
+      'amount': amount,
+      'category': category,
+      'date': date.toIso8601String().split('T')[0],
+    };
+
+    try {
+      final response = await ApiService.postRequest('/expenses', body);
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        json['id'] = json['id'].toString();
+        json['trip_id'] = json['trip_id'].toString();
+        final newExpense = Expense.fromJson(json);
+        state = [...state, newExpense];
+      }
+    } catch (e) {
+      print('Error adding expense: $e');
+    }
   }
 
-  void deleteExpense(String id) {
-    state = state.where((exp) => exp.id != id).toList();
+  Future<void> updateExpense(Expense updatedExpense) async {
+    final Map<String, dynamic> body = {
+      'trip_id': int.parse(updatedExpense.tripId),
+      'title': updatedExpense.title,
+      'amount': updatedExpense.amount,
+      'category': updatedExpense.category,
+      'date': updatedExpense.date.toIso8601String().split('T')[0],
+    };
+
+    try {
+      final response = await ApiService.putRequest('/expenses/${updatedExpense.id}', body);
+      if (response.statusCode == 200) {
+        state = [
+          for (final exp in state)
+            if (exp.id == updatedExpense.id) updatedExpense else exp
+        ];
+      }
+    } catch (e) {
+      print('Error updating expense: $e');
+    }
+  }
+
+  Future<void> deleteExpense(String id) async {
+    try {
+      final response = await ApiService.deleteRequest('/expenses/$id');
+      if (response.statusCode == 200) {
+        state = state.where((exp) => exp.id != id).toList();
+      }
+    } catch (e) {
+      print('Error deleting expense: $e');
+    }
   }
 }
 

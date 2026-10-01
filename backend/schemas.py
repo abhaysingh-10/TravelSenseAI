@@ -42,4 +42,29 @@ class TripOut(TripBase):
 
     class Config:
         orm_mode = True
-        from_attributes = True # for Pydantic V2 compatibility
+        from_attributes = True
+
+# -----------------
+# EXPENSE SCHEMAS
+# -----------------
+
+class ExpenseBase(BaseModel):
+    trip_id: int
+    title: str
+    amount: float
+    category: str
+    date: Optional[date] = None
+
+class ExpenseCreate(ExpenseBase):
+    pass
+
+class ExpenseUpdate(ExpenseBase):
+    pass
+
+class ExpenseOut(ExpenseBase):
+    id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
+        from_attributes = True

@@ -130,3 +130,77 @@ def delete_trip(trip_id: int, db: Session = Depends(get_db), current_user: model
     db.delete(trip)
     db.commit()
     return {"detail": "Trip deleted successfully"}
+
+# -----------------
+# EXPENSE ENDPOINTS
+# -----------------
+
+@app.post("/expenses", response_model=schemas.ExpenseOut)
+def create_expense(expense: schemas.ExpenseCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    # Verify that the trip actually exists and belongs to the user
+    trip = db.query(models.Trip).filter(models.Trip.id == expense.trip_id, models.Trip.user_id == current_user.id).first()
+    if not trip:
+        raise HTTPException(status_code=404, detail="Trip not found")
+
+    new_expense = models.Expense(**expense.model_dump(), user_id=current_user.id)
+    db.add(new_expense)
+    
+    # Optionally update the trip's spent amount automatically
+    trip.spent = (trip.spent or 0.0) + expense.amount
+    
+    db.commit()
+    db.refresh(new_expense)
+    return new_expense
+
+@app.get("/expenses", response_model=List[schemas.ExpenseOut])
+def get_expenses(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    expenses = db.query(models.Expense).filter(models.Expense.user_id == current_user.id).all()
+    return expenses
+
+@app.put("/expenses/{expense_id}", response_model=schemas.ExpenseOut)
+def update_expense(expense_id: int, expense_update: schemas.ExpenseUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    expense = db.query(models.Expense).filter(models.Expense.id == expense_id, models.Expense.user_id == current_user.id).first()
+    if not expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    
+    # Verify the new trip_id belongs to the user if it's being changed
+    if expense.trip_id != expense_update.trip_id:
+        trip = db.query(models.Trip).filter(models.Trip.id == expense_update.trip_id, models.Trip.user_id == current_user.id).first()
+        if not trip:
+            raise HTTPException(status_code=404, detail="Target trip not found")
+
+    # Handle trip spent adjustment
+    old_amount = expense.amount
+    old_trip_id = expense.trip_id
+    
+    for key, value in expense_update.model_dump(exclude_unset=True).items():
+        setattr(expense, key, value)
+        
+    # Adjust spent amounts if needed
+    if old_trip_id == expense.trip_id:
+        trip = db.query(models.Trip).filter(models.Trip.id == expense.trip_id).first()
+        trip.spent = (trip.spent or 0.0) - old_amount + expense.amount
+    else:
+        old_trip = db.query(models.Trip).filter(models.Trip.id == old_trip_id).first()
+        old_trip.spent = (old_trip.spent or 0.0) - old_amount
+        new_trip = db.query(models.Trip).filter(models.Trip.id == expense.trip_id).first()
+        new_trip.spent = (new_trip.spent or 0.0) + expense.amount
+
+    db.commit()
+    db.refresh(expense)
+    return expense
+
+@app.delete("/expenses/{expense_id}")
+def delete_expense(expense_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    expense = db.query(models.Expense).filter(models.Expense.id == expense_id, models.Expense.user_id == current_user.id).first()
+    if not expense:
+        raise HTTPException(status_code=404, detail="Expense not found")
+    
+    # Adjust the trip's spent amount
+    trip = db.query(models.Trip).filter(models.Trip.id == expense.trip_id).first()
+    if trip:
+        trip.spent = (trip.spent or 0.0) - expense.amount
+
+    db.delete(expense)
+    db.commit()
+    return {"detail": "Expense deleted successfully"}

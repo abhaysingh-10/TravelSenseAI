@@ -19,9 +19,9 @@ class Expense {
     return Expense(
       id: json['id'],
       tripId: json['trip_id'],
-      title: json['title'],
-      amount: (json['amount'] as num).toDouble(),
-      category: json['category'],
+      title: json['title'] ?? 'Unknown',
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      category: json['category'] ?? 'General',
       date: DateTime.parse(json['date']),
     );
   }
