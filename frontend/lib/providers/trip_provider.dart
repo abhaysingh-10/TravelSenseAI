@@ -1,75 +1,94 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:uuid/uuid.dart';
 import '../models/trip_model.dart';
-
-const uuid = Uuid();
+import '../services/api_service.dart';
 
 class TripListNotifier extends Notifier<List<Trip>> {
   @override
   List<Trip> build() {
-    // Dummy state matching DB schema perfectly
-    return [
-      Trip(
-        id: '1',
-        destination: 'Manali, Himachal',
-        startDate: DateTime(2024, 5, 10),
-        endDate: DateTime(2024, 5, 14),
-        budget: 12000,
-        spent: 9450,
-        imageUrl:
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuCixxv-3Qlw7ZrAzwZ5mbyeow_i0pWCc6DYu2JPrWSDTb1odlO3glgZpzdbLNiYlha5wMCvjKKBv3urFl33Y-QZOcWGPVW9i_02CzQWz7mk6vlxMGpx9B3yFshKg9-MjQtLlG5Gt4QJrTlnZYsRoYlBZfsC6I7QR0myWV2NSrwfQ0IUvaaKCbCJqvSOLooAnZoY7ai8gxsh3LJjA0PFlGHrguP4Qv62lsXElZ1hdrvlO23MyZvtisSq',
-        weatherTemp: 18,
-      ),
-      Trip(
-        id: '2',
-        destination: 'Goa',
-        startDate: DateTime(2024, 4, 20),
-        endDate: DateTime(2024, 4, 24),
-        budget: 15000,
-        spent: 11250,
-        imageUrl:
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuB2vb0y_efOe1blA6pqPx6rlDAdMDJzY3hB-WaxDMvKydL9oGdThb-fECUzDuZVlHvX63sui7bLLR8QszOnETR8jkySvdSIwRfVEHtQzhPLKI131tz1S360hchzt86eUp5qY7JfVNd5KWSC_Dk1ZJLvyByD3fHay-HkONwpGDzPWjsTOsQiPzH7TiSKqBhmgi0BD-8ttHD2CgFFyITImitSerE641PqQugkByJ9JbGihvGLNWym_73X',
-        weatherTemp: 29,
-      ),
-      Trip(
-        id: '3',
-        destination: 'Jaipur, Rajasthan',
-        startDate: DateTime(2024, 3, 12),
-        endDate: DateTime(2024, 3, 15),
-        budget: 8000,
-        spent: 6200,
-        imageUrl:
-            'https://lh3.googleusercontent.com/aida-public/AB6AXuCd5Yc65FIicKVnpcmCIE7VuU9_uxSTzvEU_trDaj29inHqVjL-Qq7sLca4l356XouwQZ-jzxV4G3ryjli3FWtpKHYAu7fiiL_GpIuiBRDT5rq54HHvngREJEv0zmcEJWlMPAuQHepDwOVlmTaqDz4Q186Usf9fa7kit6vVrEFpVEDVAtSZGuiBQMeJKg_HjlXKtx1LS0tgOuZlY086rtwKb9ns0SsRRSGMsdrCu8Sh5I7bWnhJ-29k',
-        weatherTemp: 32,
-      ),
-    ];
+    // Initial state is empty. The UI or some init logic should call fetchTrips().
+    // Returning an empty list here to maintain synchronous return type.
+    fetchTrips();
+    return [];
   }
 
-  void addTrip(
-      String destination, DateTime startDate, DateTime endDate, double budget) {
-    final newTrip = Trip(
-      id: uuid.v4(),
-      destination: destination,
-      startDate: startDate,
-      endDate: endDate,
-      budget: budget,
-      spent: 0,
-      imageUrl:
-          'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000', // Placeholder image
-      weatherTemp: 25, // Placeholder temp
-    );
-    state = [...state, newTrip];
+  Future<void> fetchTrips() async {
+    try {
+      final response = await ApiService.getRequest('/trips');
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        // The backend `id` is an int, but frontend expects String. The fromJson in trip_model
+        // might need to handle this. Let's make sure it parses properly.
+        state = data.map((json) {
+          // Convert integer ID to string so fromJson works flawlessly
+          json['id'] = json['id'].toString();
+          return Trip.fromJson(json);
+        }).toList();
+      }
+    } catch (e) {
+      print('Error fetching trips: $e');
+    }
   }
 
-  void updateTrip(Trip updatedTrip) {
-    state = [
-      for (final trip in state)
-        if (trip.id == updatedTrip.id) updatedTrip else trip
-    ];
+  Future<void> addTrip(
+      String destination, DateTime startDate, DateTime endDate, double budget) async {
+    
+    final Map<String, dynamic> body = {
+      'destination': destination,
+      'start_date': startDate.toIso8601String().split('T')[0],
+      'end_date': endDate.toIso8601String().split('T')[0],
+      'budget': budget,
+      'spent': 0.0,
+      'image_url': 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000',
+      'weather_temp': 25,
+    };
+
+    try {
+      final response = await ApiService.postRequest('/trips', body);
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        json['id'] = json['id'].toString();
+        final newTrip = Trip.fromJson(json);
+        state = [...state, newTrip];
+      }
+    } catch (e) {
+      print('Error adding trip: $e');
+    }
   }
 
-  void deleteTrip(String tripId) {
-    state = state.where((trip) => trip.id != tripId).toList();
+  Future<void> updateTrip(Trip updatedTrip) async {
+    final Map<String, dynamic> body = {
+      'destination': updatedTrip.destination,
+      'start_date': updatedTrip.startDate.toIso8601String().split('T')[0],
+      'end_date': updatedTrip.endDate.toIso8601String().split('T')[0],
+      'budget': updatedTrip.budget,
+      'spent': updatedTrip.spent,
+      'image_url': updatedTrip.imageUrl,
+      'weather_temp': updatedTrip.weatherTemp,
+    };
+
+    try {
+      final response = await ApiService.putRequest('/trips/${updatedTrip.id}', body);
+      if (response.statusCode == 200) {
+        state = [
+          for (final trip in state)
+            if (trip.id == updatedTrip.id) updatedTrip else trip
+        ];
+      }
+    } catch (e) {
+      print('Error updating trip: $e');
+    }
+  }
+
+  Future<void> deleteTrip(String tripId) async {
+    try {
+      final response = await ApiService.deleteRequest('/trips/$tripId');
+      if (response.statusCode == 200) {
+        state = state.where((trip) => trip.id != tripId).toList();
+      }
+    } catch (e) {
+      print('Error deleting trip: $e');
+    }
   }
 }
 

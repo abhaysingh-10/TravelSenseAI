@@ -56,4 +56,27 @@ class ApiService {
       body: isUrlEncoded ? body.keys.map((k) => '${Uri.encodeComponent(k)}=${Uri.encodeComponent(body[k].toString())}').join('&') : jsonEncode(body),
     );
   }
+
+  static Future<http.Response> putRequest(String endpoint, Map<String, dynamic> body) async {
+    final token = await getToken();
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+
+    return await http.put(
+      Uri.parse('$baseUrl$endpoint'),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+  }
+
+  static Future<http.Response> deleteRequest(String endpoint) async {
+    final token = await getToken();
+    final headers = {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+    return await http.delete(Uri.parse('$baseUrl$endpoint'), headers: headers);
+  }
 }

@@ -25,6 +25,10 @@ class TripBase(BaseModel):
     destination: str
     start_date: Optional[date] = None
     end_date: Optional[date] = None
+    budget: Optional[float] = 0.0
+    spent: Optional[float] = 0.0
+    image_url: Optional[str] = None
+    weather_temp: Optional[int] = 25
 
 class TripCreate(TripBase):
     pass

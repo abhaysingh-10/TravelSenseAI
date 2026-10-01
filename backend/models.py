@@ -22,6 +22,10 @@ class Trip(Base):
     destination = Column(String, index=True, nullable=False)
     start_date = Column(Date, nullable=True)
     end_date = Column(Date, nullable=True)
+    budget = Column(Float, nullable=True, default=0.0)
+    spent = Column(Float, nullable=True, default=0.0)
+    image_url = Column(String, nullable=True)
+    weather_temp = Column(Integer, nullable=True, default=25)
     
     # This links the trip to a specific user ID
     user_id = Column(Integer, ForeignKey("users.id"))
