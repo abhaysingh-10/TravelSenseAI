@@ -97,7 +97,7 @@ from typing import List
 
 @app.post("/trips", response_model=schemas.TripOut)
 def create_trip(trip: schemas.TripCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    new_trip = models.Trip(**trip.dict(), user_id=current_user.id)
+    new_trip = models.Trip(**trip.model_dump(), user_id=current_user.id)
     db.add(new_trip)
     db.commit()
     db.refresh(new_trip)
@@ -114,7 +114,7 @@ def update_trip(trip_id: int, trip_update: schemas.TripUpdate, db: Session = Dep
     if not trip:
         raise HTTPException(status_code=404, detail="Trip not found")
     
-    for key, value in trip_update.dict(exclude_unset=True).items():
+    for key, value in trip_update.model_dump(exclude_unset=True).items():
         setattr(trip, key, value)
         
     db.commit()
