@@ -99,25 +99,41 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 48),
 
               // Logout Button
-              OutlinedButton.icon(
-                onPressed: () {
-                  ref.read(authProvider.notifier).logout();
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (route) => false,
-                  );
-                },
-                icon: const Icon(Icons.logout, color: Colors.red),
-                label: const Text('Logout',
-                    style: TextStyle(
-                        color: Colors.red,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
-                style: OutlinedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 56),
-                  side: const BorderSide(color: Colors.red, width: 2),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
+              Material(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(24),
+                  onTap: () {
+                    ref.read(authProvider.notifier).logout();
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(color: Colors.grey.shade200),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.logout_rounded, color: Colors.red.shade400, size: 20),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Log out',
+                          style: TextStyle(
+                            color: Colors.red.shade400,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
