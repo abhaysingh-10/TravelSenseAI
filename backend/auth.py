@@ -21,7 +21,7 @@ import jwt
 from datetime import datetime, timedelta
 
 # Load our secret key from the .env file to sign the tokens securely
-SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
+SECRET_KEY = os.getenv("SECRET_KEY", "a_very_long_and_secure_fallback_secret_key_for_jwt_2026")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # Token expires in 7 days
 

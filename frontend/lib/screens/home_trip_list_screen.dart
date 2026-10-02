@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import 'add_edit_trip_screen.dart';
 import 'trip_detail_screen.dart';
+import 'profile_screen.dart';
 import '../widgets/ai_picks_carousel.dart';
 
 class HomeTripListScreen extends ConsumerWidget {
@@ -58,10 +59,19 @@ class HomeTripListScreen extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.grey.shade200,
-                        child: Icon(Icons.person, color: Colors.grey.shade400, size: 28),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const ProfileScreen()),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.grey.shade200,
+                          child: Icon(Icons.person, color: Colors.grey.shade400, size: 28),
+                        ),
                       ),
                     ],
                   ),

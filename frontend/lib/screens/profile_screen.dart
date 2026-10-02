@@ -22,14 +22,14 @@ class ProfileScreen extends ConsumerWidget {
           style:
               TextStyle(color: Color(0xFF121C2C), fontWeight: FontWeight.bold),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Color(0xFF121C2C)),
-          onPressed: () {},
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Color(0xFF121C2C)),
-            onPressed: () {},
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Settings coming soon...')),
+              );
+            },
           ),
         ],
       ),
@@ -40,11 +40,10 @@ class ProfileScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Profile Header
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 48,
-                backgroundImage: NetworkImage(
-                    'https://lh3.googleusercontent.com/aida-public/AB6AXuAoRGg6kRj97gu3ofbZx6h6wcyslpp3D_EE1bsgo_38VcvvuZHT-bzwefNDchZSI4c-wcadUygSHc4ng1P4xYmZnoBQ-f_GJ5DhRECEA86UtHvQ8YoNhOCznC06aOsMN66dh_1A_uAy88NSUPGvpYG22TbG4V3QzFFkcy6qFT6F8gA9bIEsYs69EoXnPugSF4A8O--H5Ee6HXK8GFXj6NBjhZbw35euiuAQsueCL8ZnEv6dGC6kV0Fs'),
-                backgroundColor: Colors.transparent,
+                backgroundColor: Colors.grey.shade200,
+                child: Icon(Icons.person, size: 64, color: Colors.grey.shade400),
               ),
               const SizedBox(height: 16),
               Text(
@@ -157,7 +156,11 @@ class ProfileScreen extends ConsumerWidget {
                     color: Color(0xFF121C2C)),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Edit Profile coming soon...')),
+                  );
+                },
                 style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(40, 30),
