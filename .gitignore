@@ -61,6 +61,5 @@ venv/
 env/
 .venv/
 frontend/build/
-
-# VSCode Counter
 .VSCodeCounter/
+test/
