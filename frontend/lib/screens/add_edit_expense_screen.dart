@@ -22,6 +22,7 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
   late TextEditingController _amountController;
   String _selectedCategory = 'Food';
   DateTime? _selectedDate;
+  bool _isLoading = false;
 
   final List<String> _categories = [
     'Flight',
@@ -89,6 +90,10 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
     final title = _titleController.text.trim();
     final amount = double.tryParse(_amountController.text.trim()) ?? 0.0;
 
+    setState(() {
+      _isLoading = true;
+    });
+
     bool success = false;
     if (widget.expense == null) {
       // Add
@@ -108,6 +113,12 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
         date: _selectedDate!,
       );
       success = await ref.read(expenseListProvider.notifier).updateExpense(updated);
+    }
+
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
 
     if (success) {
@@ -235,6 +246,7 @@ class _AddEditExpenseScreenState extends ConsumerState<AddEditExpenseScreen> {
                 CustomButton(
                   text: isEditing ? 'Save Changes' : 'Add Expense',
                   onPressed: _saveExpense,
+                  isLoading: _isLoading,
                 ),
               ],
             ),

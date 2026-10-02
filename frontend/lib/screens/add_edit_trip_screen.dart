@@ -22,6 +22,7 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
   late TextEditingController _budgetController;
   DateTime? _startDate;
   DateTime? _endDate;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -104,6 +105,10 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
       final destination = _destinationController.text.trim();
       final budget = double.tryParse(_budgetController.text.trim()) ?? 0.0;
 
+      setState(() {
+        _isLoading = true;
+      });
+
       bool success = false;
       if (widget.trip == null) {
         // Add new
@@ -122,6 +127,12 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
           budget: budget,
         );
         success = await ref.read(tripListProvider.notifier).updateTrip(updatedTrip);
+      }
+
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
       }
 
       if (success) {
@@ -265,6 +276,7 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
                 CustomButton(
                   text: isEditing ? 'Save Changes' : 'Create Trip',
                   onPressed: _saveTrip,
+                  isLoading: _isLoading,
                 ),
               ],
             ),

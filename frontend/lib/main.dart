@@ -17,6 +17,7 @@ class TravelSenseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'TravelSense AI',
       theme: AppTheme.lightTheme,
       home : const SplashScreen(), 
