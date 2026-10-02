@@ -95,9 +95,27 @@ def login_user(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = D
 # -----------------
 from typing import List
 
+from services import get_weather_for_city, get_distance_between_cities, get_image_for_city
+
+@app.get("/api/distance")
+async def calculate_distance(origin: str, destination: str):
+    distance_km = await get_distance_between_cities(origin, destination)
+    if distance_km == 0.0:
+        raise HTTPException(status_code=400, detail="Could not calculate distance. Check city names or API key.")
+    return {"origin": origin, "destination": destination, "distance_km": distance_km}
+
 @app.post("/trips", response_model=schemas.TripOut)
-def create_trip(trip: schemas.TripCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
-    new_trip = models.Trip(**trip.model_dump(), user_id=current_user.id)
+async def create_trip(trip: schemas.TripCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    weather = await get_weather_for_city(trip.destination)
+    image_url = await get_image_for_city(trip.destination)
+    
+    # Dump trip payload and overwrite weather_temp and image_url
+    trip_data = trip.model_dump()
+    trip_data['weather_temp'] = int(round(weather))
+    if image_url:
+        trip_data['image_url'] = image_url
+    
+    new_trip = models.Trip(**trip_data, user_id=current_user.id)
     db.add(new_trip)
     db.commit()
     db.refresh(new_trip)
