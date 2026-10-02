@@ -48,8 +48,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             end: Alignment.bottomRight,
             colors: [
               Colors.white,
-              Theme.of(context).primaryColor.withOpacity(0.05),
-              Theme.of(context).primaryColor.withOpacity(0.1),
+              Theme.of(context).primaryColor.withValues(alpha: 0.05),
+              Theme.of(context).primaryColor.withValues(alpha: 0.1),
             ],
           ),
         ),
@@ -73,7 +73,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         boxShadow: [
                           BoxShadow(
                             color:
-                                Theme.of(context).primaryColor.withOpacity(0.3),
+                                Theme.of(context).primaryColor.withValues(alpha: 0.3),
                             blurRadius: 16,
                             offset: const Offset(0, 8),
                           ),
@@ -114,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       boxShadow: [
                         BoxShadow(
                           color:
-                              Theme.of(context).primaryColor.withOpacity(0.04),
+                              Theme.of(context).primaryColor.withValues(alpha: 0.04),
                           blurRadius: 24,
                           offset: const Offset(0, 8),
                         ),
@@ -183,7 +183,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             elevation: 4,
                             shadowColor:
-                                Theme.of(context).primaryColor.withOpacity(0.4),
+                                Theme.of(context).primaryColor.withValues(alpha: 0.4),
                           ),
                           child: authState.isLoading
                               ? const SizedBox(

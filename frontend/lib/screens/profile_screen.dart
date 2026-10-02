@@ -187,7 +187,8 @@ class ProfileScreen extends ConsumerWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildInfoRow('PREFERENCES', prefs.isEmpty ? 'None added' : prefs.join(', ')),
+                Expanded(child: _buildInfoRow('PREFERENCES', prefs.isEmpty ? 'None added' : prefs.join(', '))),
+                const SizedBox(width: 16),
                 Icon(Icons.edit, color: Colors.grey.shade400, size: 20),
               ],
             ),
@@ -217,10 +218,9 @@ class ProfileScreen extends ConsumerWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (ctx) {
+        final selectedPrefs = List<String>.from(ref.read(preferencesProvider));
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
-            final selectedPrefs = List<String>.from(ref.read(preferencesProvider));
-            
             return Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(

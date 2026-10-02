@@ -136,9 +136,9 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
       }
 
       if (success) {
-        if (context.mounted) Navigator.pop(context);
+        if (mounted) Navigator.pop(context);
       } else {
-        if (context.mounted) {
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Failed to save trip. Check your connection.')),
           );
