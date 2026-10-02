@@ -18,13 +18,13 @@ class Token(BaseModel):
 # TRIP SCHEMAS
 # -----------------
 
-from datetime import date
+from datetime import date as dt_date
 from typing import Optional
 
 class TripBase(BaseModel):
     destination: str
-    start_date: Optional[date] = None
-    end_date: Optional[date] = None
+    start_date: Optional[dt_date] = None
+    end_date: Optional[dt_date] = None
     budget: Optional[float] = 0.0
     spent: Optional[float] = 0.0
     image_url: Optional[str] = None
@@ -53,7 +53,7 @@ class ExpenseBase(BaseModel):
     title: str
     amount: float
     category: str
-    date: Optional[date] = None
+    date: Optional[dt_date] = None
 
 class ExpenseCreate(ExpenseBase):
     pass
