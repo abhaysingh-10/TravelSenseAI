@@ -3,6 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
 
+class PreferencesNotifier extends Notifier<List<String>> {
+  @override
+  List<String> build() => ['Mountains', 'Road Trips'];
+  
+  void updatePreferences(List<String> newPrefs) {
+    state = newPrefs;
+  }
+}
+
+final preferencesProvider = NotifierProvider<PreferencesNotifier, List<String>>(PreferencesNotifier.new);
+
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -22,16 +33,6 @@ class ProfileScreen extends ConsumerWidget {
           style:
               TextStyle(color: Color(0xFF121C2C), fontWeight: FontWeight.bold),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings, color: Color(0xFF121C2C)),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Settings coming soon...')),
-              );
-            },
-          ),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -90,7 +91,7 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 32),
 
               // Profile Info Card
-              _buildInfoCard(context, user),
+              _buildInfoCard(context, user, ref),
               const SizedBox(height: 24),
 
               // Traveler Segment Card
@@ -127,7 +128,9 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, user) {
+  Widget _buildInfoCard(BuildContext context, user, WidgetRef ref) {
+    final prefs = ref.watch(preferencesProvider);
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -155,21 +158,6 @@ class ProfileScreen extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF121C2C)),
               ),
-              TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Edit Profile coming soon...')),
-                  );
-                },
-                style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size(40, 30),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-                child: Text('Edit',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor)),
-              )
             ],
           ),
           const SizedBox(height: 24),
@@ -177,15 +165,106 @@ class ProfileScreen extends ConsumerWidget {
           Divider(height: 32, thickness: 1, color: Colors.grey.shade200),
           _buildInfoRow('EMAIL', user?.email ?? 'No email'),
           Divider(height: 32, thickness: 1, color: Colors.grey.shade200),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildInfoRow('PREFERENCES', 'Mountains, Road Trips'),
-              Icon(Icons.chevron_right, color: Colors.grey.shade400),
-            ],
+          GestureDetector(
+            onTap: () => _showPreferencesDialog(context, ref),
+            behavior: HitTestBehavior.opaque,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildInfoRow('PREFERENCES', prefs.isEmpty ? 'None added' : prefs.join(', ')),
+                Icon(Icons.edit, color: Colors.grey.shade400, size: 20),
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showPreferencesDialog(BuildContext context, WidgetRef ref) {
+    final availablePrefs = [
+      'Mountains',
+      'Road Trips',
+      'Beaches',
+      'Luxury',
+      'Backpacking',
+      'Food & Culinary',
+      'History & Culture',
+      'Urban Exploration'
+    ];
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            final selectedPrefs = List<String>.from(ref.read(preferencesProvider));
+            
+            return Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Travel Preferences',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF121C2C)),
+                  ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: availablePrefs.map((pref) {
+                      final isSelected = selectedPrefs.contains(pref);
+                      return FilterChip(
+                        label: Text(pref),
+                        selected: isSelected,
+                        onSelected: (selected) {
+                          setState(() {
+                            if (selected) {
+                              selectedPrefs.add(pref);
+                            } else {
+                              selectedPrefs.remove(pref);
+                            }
+                          });
+                        },
+                        selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                        checkmarkColor: Theme.of(context).primaryColor,
+                        labelStyle: TextStyle(
+                          color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 32),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        ref.read(preferencesProvider.notifier).updatePreferences(selectedPrefs);
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        backgroundColor: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      ),
+                      child: const Text('Save Preferences', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          }
+        );
+      },
     );
   }
 
