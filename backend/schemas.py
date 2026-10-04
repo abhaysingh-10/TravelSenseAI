@@ -33,8 +33,14 @@ class TripBase(BaseModel):
 class TripCreate(TripBase):
     pass
 
-class TripUpdate(TripBase):
-    pass
+class TripUpdate(BaseModel):
+    destination: Optional[str] = None
+    start_date: Optional[dt_date] = None
+    end_date: Optional[dt_date] = None
+    budget: Optional[float] = None
+    spent: Optional[float] = None
+    image_url: Optional[str] = None
+    weather_temp: Optional[int] = None
 
 class TripOut(TripBase):
     id: int
@@ -58,8 +64,12 @@ class ExpenseBase(BaseModel):
 class ExpenseCreate(ExpenseBase):
     pass
 
-class ExpenseUpdate(ExpenseBase):
-    pass
+class ExpenseUpdate(BaseModel):
+    trip_id: Optional[int] = None
+    title: Optional[str] = None
+    amount: Optional[float] = None
+    category: Optional[str] = None
+    date: Optional[dt_date] = None
 
 class ExpenseOut(ExpenseBase):
     id: int

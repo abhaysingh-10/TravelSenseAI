@@ -182,7 +182,7 @@ def update_expense(expense_id: int, expense_update: schemas.ExpenseUpdate, db: S
         raise HTTPException(status_code=404, detail="Expense not found")
     
     # Verify the new trip_id belongs to the user if it's being changed
-    if expense.trip_id != expense_update.trip_id:
+    if expense_update.trip_id is not None and expense.trip_id != expense_update.trip_id:
         trip = db.query(models.Trip).filter(models.Trip.id == expense_update.trip_id, models.Trip.user_id == current_user.id).first()
         if not trip:
             raise HTTPException(status_code=404, detail="Target trip not found")
