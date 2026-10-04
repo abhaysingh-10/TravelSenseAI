@@ -10,7 +10,9 @@ SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 
 # Supabase gives us a "postgres://" link, but SQLAlchemy prefers "postgresql://"
 if SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgres://"):
-    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif SQLALCHEMY_DATABASE_URL and SQLALCHEMY_DATABASE_URL.startswith("postgresql://"):
+    SQLALCHEMY_DATABASE_URL = SQLALCHEMY_DATABASE_URL.replace("postgresql://", "postgresql+psycopg://", 1)
 
 # 2. Create the "Engine" (the core tool that actually talks to Supabase)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
