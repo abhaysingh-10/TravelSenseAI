@@ -12,15 +12,6 @@ load_dotenv()
 
 app = FastAPI(title="TravelSense AI API")
 
-from fastapi.responses import JSONResponse
-import traceback
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request, exc):
-    return JSONResponse(status_code=500, content={"message": str(exc), "traceback": traceback.format_exc()})
-
-
-
 ''' CORS CONFIGURATION 
 This allows our Flutter app 
  to communicate with this backend without getting blocked by security rules.'''
