@@ -1,10 +1,5 @@
 from pydantic import BaseModel
 
-# -----------------
-# USER SCHEMAS
-# -----------------
-
-# This defines what data the Flutter app must send when a user registers or logs in
 class UserCreate(BaseModel):
     email: str
     password: str
@@ -14,9 +9,6 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-# -----------------
-# TRIP SCHEMAS
-# -----------------
 
 from datetime import date as dt_date
 from typing import Optional
@@ -50,9 +42,6 @@ class TripOut(TripBase):
         orm_mode = True
         from_attributes = True
 
-# -----------------
-# EXPENSE SCHEMAS
-# -----------------
 
 class ExpenseBase(BaseModel):
     trip_id: int

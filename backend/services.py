@@ -85,7 +85,7 @@ async def get_image_for_city(city_name: str) -> str:
     Falls back to a default Unsplash image if none is found or if it fails.
     """
     url = f"https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch={city_name}&prop=pageimages&format=json&pithumbsize=1000&gsrlimit=3"
-    headers = {"User-Agent": "TravelSenseAI/1.0"}
+    headers = {"User-Agent": "TravelSenseAI/1.0 (https://github.com/abhaysingh-10/TravelSenseAI)"}
     
     async with httpx.AsyncClient(follow_redirects=True, headers=headers) as client:
         try:

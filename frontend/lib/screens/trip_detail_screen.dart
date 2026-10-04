@@ -383,19 +383,13 @@ class TripDetailScreen extends ConsumerWidget {
             child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
           ),
           TextButton(
-            onPressed: () async {
-              final success = await ref.read(tripListProvider.notifier).deleteTrip(trip.id);
-              if (success) {
-                if (ctx.mounted) Navigator.pop(ctx); // Close dialog
-                if (context.mounted) Navigator.pop(context); // Close detail screen
-              } else {
-                if (ctx.mounted) Navigator.pop(ctx);
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to delete trip. Check your connection.')),
-                  );
-                }
-              }
+            onPressed: () {
+              // Pop the dialog
+              Navigator.pop(ctx);
+              // Pop the detail screen
+              Navigator.pop(context);
+              // Trigger deletion (fire and forget)
+              ref.read(tripListProvider.notifier).deleteTrip(trip.id);
             },
             child: Text('Delete', style: TextStyle(color: Colors.red.shade400, fontWeight: FontWeight.w600)),
           ),
