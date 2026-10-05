@@ -63,3 +63,5 @@ env/
 frontend/build/
 .VSCodeCounter/
 test/
+
+.vscode/
