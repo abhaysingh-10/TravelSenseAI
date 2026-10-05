@@ -81,10 +81,13 @@ async def get_distance_between_cities(city1: str, city2: str) -> float:
 
 async def get_image_for_city(city_name: str) -> str:
     """
-    Fetches an image URL for the given city using the Wikipedia API.
+    Fetches a scenic image URL for the given city using the Wikipedia API.
     Falls back to a default Unsplash image if none is found or if it fails.
     """
-    url = f"https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch={city_name}&prop=pageimages&format=json&pithumbsize=1000&gsrlimit=3"
+    import urllib.parse
+    # Append 'tourism' to force Wikipedia to return scenic landmarks instead of politicians/maps
+    search_query = urllib.parse.quote(f"{city_name} tourism")
+    url = f"https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch={search_query}&prop=pageimages&format=json&pithumbsize=1000&gsrlimit=5"
     headers = {"User-Agent": "TravelSenseAI/1.0 (https://github.com/abhaysingh-10/TravelSenseAI)"}
     
     async with httpx.AsyncClient(follow_redirects=True, headers=headers) as client:
