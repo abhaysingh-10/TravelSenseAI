@@ -102,4 +102,5 @@ async def get_image_for_city(city_name: str) -> str:
         except Exception as e:
             print(f"Image Fetch Error: {e}")
             
-    return "https://raw.githubusercontent.com/abhaysingh-10/TravelSenseAI/main/frontend/assets/icon/app_icon.jpg"
+    # Return an empty string so the Flutter frontend errorBuilder triggers and shows Icons.image_not_supported
+    return ""
