@@ -102,5 +102,5 @@ async def get_image_for_city(city_name: str) -> str:
         except Exception as e:
             print(f"Image Fetch Error: {e}")
             
-    # Return an empty string so the Flutter frontend errorBuilder triggers and shows Icons.image_not_supported
-    return ""
+    # Return an invalid URL so Flutter triggers errorBuilder safely (empty strings can cause assertion crashes)
+    return "http://invalid.url/image.png"
