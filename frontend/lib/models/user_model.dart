@@ -22,13 +22,15 @@ class User {
 }
 
 class AuthState {
-  final bool isLoading;
+  final bool isLoginLoading;
+  final bool isRegisterLoading;
   final String? error;
   final User? user;
   final String? accessToken;
 
   AuthState({
-    this.isLoading = false,
+    this.isLoginLoading = false,
+    this.isRegisterLoading = false,
     this.error,
     this.user,
     this.accessToken,
@@ -37,13 +39,15 @@ class AuthState {
   bool get isAuthenticated => user != null && accessToken != null;
 
   AuthState copyWith({
-    bool? isLoading,
+    bool? isLoginLoading,
+    bool? isRegisterLoading,
     String? error,
     User? user,
     String? accessToken,
   }) {
     return AuthState(
-      isLoading: isLoading ?? this.isLoading,
+      isLoginLoading: isLoginLoading ?? this.isLoginLoading,
+      isRegisterLoading: isRegisterLoading ?? this.isRegisterLoading,
       error: error,
       user: user ?? this.user,
       accessToken: accessToken ?? this.accessToken,

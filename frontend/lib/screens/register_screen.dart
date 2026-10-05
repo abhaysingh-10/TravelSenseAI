@@ -189,7 +189,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             // Sign Up Button
                             ElevatedButton(
                               onPressed:
-                                  authState.isLoading ? null : _handleRegister,
+                                  authState.isRegisterLoading ? null : _handleRegister,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 foregroundColor: Colors.white,
@@ -202,7 +202,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     .primaryColor
                                     .withValues(alpha: 0.4),
                               ),
-                              child: authState.isLoading
+                              child: authState.isRegisterLoading
                                   ? const SizedBox(
                                       height: 24,
                                       width: 24,

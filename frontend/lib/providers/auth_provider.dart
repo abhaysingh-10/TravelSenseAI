@@ -25,10 +25,10 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<bool> login(String email, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isLoginLoading: true, error: null);
 
     if (email.isEmpty || password.isEmpty) {
-      state = state.copyWith(isLoading: false, error: 'Email and password cannot be empty');
+      state = state.copyWith(isLoginLoading: false, error: 'Email and password cannot be empty');
       return false;
     }
 
@@ -54,27 +54,27 @@ class AuthNotifier extends Notifier<AuthState> {
         final user = User(id: 'mock-id', email: email, fullName: email.split('@')[0], isActive: true);
 
         state = state.copyWith(
-          isLoading: false,
+          isLoginLoading: false,
           user: user,
           accessToken: token,
         );
         return true;
       } else {
         final data = jsonDecode(response.body);
-        state = state.copyWith(isLoading: false, error: data['detail'] ?? 'Login failed');
+        state = state.copyWith(isLoginLoading: false, error: data['detail'] ?? 'Login failed');
         return false;
       }
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Network error occurred');
+      state = state.copyWith(isLoginLoading: false, error: 'Network error occurred');
       return false;
     }
   }
 
   Future<bool> register(String fullName, String email, String password) async {
-    state = state.copyWith(isLoading: true, error: null);
+    state = state.copyWith(isRegisterLoading: true, error: null);
 
     if (email.isEmpty || password.isEmpty || fullName.isEmpty) {
-      state = state.copyWith(isLoading: false, error: 'All fields are required');
+      state = state.copyWith(isRegisterLoading: false, error: 'All fields are required');
       return false;
     }
 
@@ -94,11 +94,11 @@ class AuthNotifier extends Notifier<AuthState> {
         return await login(email, password);
       } else {
         final data = jsonDecode(response.body);
-        state = state.copyWith(isLoading: false, error: data['detail'] ?? 'Registration failed');
+        state = state.copyWith(isRegisterLoading: false, error: data['detail'] ?? 'Registration failed');
         return false;
       }
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: 'Network error occurred');
+      state = state.copyWith(isRegisterLoading: false, error: 'Network error occurred');
       return false;
     }
   }

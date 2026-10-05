@@ -173,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 32),
                         // Login Button
                         ElevatedButton(
-                          onPressed: authState.isLoading ? null : _handleLogin,
+                          onPressed: authState.isLoginLoading ? null : _handleLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Theme.of(context).primaryColor,
                             foregroundColor: Colors.white,
@@ -185,7 +185,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             shadowColor:
                                 Theme.of(context).primaryColor.withValues(alpha: 0.4),
                           ),
-                          child: authState.isLoading
+                          child: authState.isLoginLoading
                               ? const SizedBox(
                                   height: 24,
                                   width: 24,
