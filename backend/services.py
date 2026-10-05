@@ -95,8 +95,9 @@ async def get_image_for_city(city_name: str) -> str:
             response = await client.get(url, timeout=5.0)
             if response.status_code == 200:
                 data = response.json()
-                pages = data.get("query", {}).get("pages", {})
-                for p_id, p_info in pages.items():
+                # Sort pages by Wikipedia's relevance index so we don't accidentally pick a politician (who might be index 3) over the actual state (index 1)
+                sorted_pages = sorted(pages.values(), key=lambda x: x.get("index", 999))
+                for p_info in sorted_pages:
                     if "thumbnail" in p_info:
                         return p_info["thumbnail"]["source"]
         except Exception as e:
