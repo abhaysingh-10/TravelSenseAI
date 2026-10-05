@@ -102,4 +102,4 @@ async def get_image_for_city(city_name: str) -> str:
         except Exception as e:
             print(f"Image Fetch Error: {e}")
             
-    return "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=1000"
+    return "https://raw.githubusercontent.com/abhaysingh-10/TravelSenseAI/main/frontend/assets/icon/app_icon.jpg"
