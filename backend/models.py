@@ -49,3 +49,12 @@ class Expense(Base):
 
     owner = relationship("User", back_populates="expenses")
     trip = relationship("Trip", back_populates="expenses")
+
+class Destination(Base):
+    __tablename__ = "destinations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)
+    description = Column(String, nullable=True)
+    image_url = Column(String, nullable=True)
+    scraped_at = Column(DateTime(timezone=True), server_default=func.now())
