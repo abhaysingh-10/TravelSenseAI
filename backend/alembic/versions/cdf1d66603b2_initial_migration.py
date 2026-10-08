@@ -1,3 +1,4 @@
+
 """Initial migration
 
 Revision ID: cdf1d66603b2

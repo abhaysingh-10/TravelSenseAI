@@ -58,7 +58,7 @@ def predict_trip_cost(destination, trip_days, travelers_count, transport_mode, h
     predicted_cost = cost_model.predict(input_df)[0]
     return round(predicted_cost, 2)
 
-# 3. Load the Duration Prediction Model (Task 2)
+#  Load the Duration Prediction Model
 DURATION_MODEL_PATH = os.path.join(BASE_DIR, 'agent', 'models', 'duration_prediction_rf.pkl')
 try:
     duration_model = joblib.load(DURATION_MODEL_PATH)
