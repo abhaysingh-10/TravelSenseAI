@@ -67,3 +67,18 @@ class ExpenseOut(ExpenseBase):
     class Config:
         orm_mode = True
         from_attributes = True
+
+# -----------------
+# ML PREDICTION SCHEMAS
+# -----------------
+class CostPredictionRequest(BaseModel):
+    destination: str
+    trip_days: int
+    travelers_count: int
+    transport_mode: str
+    hotel_type: str
+    season: str
+    traveler_type: str
+
+class CostPredictionResponse(BaseModel):
+    predicted_cost_inr: float
