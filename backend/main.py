@@ -222,3 +222,26 @@ def delete_expense(expense_id: int, db: Session = Depends(get_db), current_user:
     db.delete(expense)
     db.commit()
     return {"detail": "Expense deleted successfully"}
+
+# -----------------
+# ML ENDPOINTS (PHASE 4)
+# -----------------
+from ml_service import predict_trip_cost
+
+@app.post("/api/ml/predict-cost", response_model=schemas.CostPredictionResponse)
+def get_cost_prediction(request: schemas.CostPredictionRequest):
+    try:
+        cost = predict_trip_cost(
+            destination=request.destination,
+            trip_days=request.trip_days,
+            travelers_count=request.travelers_count,
+            transport_mode=request.transport_mode,
+            hotel_type=request.hotel_type,
+            season=request.season,
+            traveler_type=request.traveler_type
+        )
+        return {"predicted_cost_inr": cost}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="An error occurred during prediction.")
