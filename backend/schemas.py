@@ -82,3 +82,15 @@ class CostPredictionRequest(BaseModel):
 
 class CostPredictionResponse(BaseModel):
     predicted_cost_inr: float
+
+class DurationPredictionRequest(BaseModel):
+    destination: str
+    total_cost_inr: float
+    travelers_count: int
+    transport_mode: str
+    hotel_type: str
+    season: str
+    traveler_type: str
+
+class DurationPredictionResponse(BaseModel):
+    predicted_trip_days: int
