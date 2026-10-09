@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class UserCreate(BaseModel):
     email: str
@@ -94,3 +95,16 @@ class DurationPredictionRequest(BaseModel):
 
 class DurationPredictionResponse(BaseModel):
     predicted_trip_days: int
+
+class RecommendationRequest(BaseModel):
+    traveler_type: str
+    top_n: int = 3
+
+class RecommendedDestination(BaseModel):
+    name: str
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+
+class RecommendationResponse(BaseModel):
+    traveler_type: str
+    recommendations: list[RecommendedDestination]
