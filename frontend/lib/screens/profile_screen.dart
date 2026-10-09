@@ -341,7 +341,7 @@ class ProfileScreen extends ConsumerWidget {
                 Icon(Icons.location_on, color: Theme.of(context).primaryColor),
           ),
           const SizedBox(width: 16),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
