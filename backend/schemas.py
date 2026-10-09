@@ -83,6 +83,7 @@ class CostPredictionRequest(BaseModel):
 
 class CostPredictionResponse(BaseModel):
     predicted_cost_inr: float
+    assumed_days: int
 
 class DurationPredictionRequest(BaseModel):
     destination: str

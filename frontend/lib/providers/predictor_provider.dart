@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/prediction_model.dart';
-import 'dart:math';
+import 'dart:convert';
+import '../services/api_service.dart';
 
 class PredictorState {
   final bool isLoading;
@@ -35,33 +36,51 @@ class PredictorNotifier extends Notifier<PredictorState> {
   Future<void> predictTrip(String destination, String style, int travelers) async {
     state = state.copyWith(isLoading: true, error: null, prediction: null);
 
-    // Simulate AI model latency
-    await Future.delayed(const Duration(seconds: 2));
-
     if (destination.trim().isEmpty) {
       state = state.copyWith(isLoading: false, error: 'Please enter a destination');
       return;
     }
 
-    // Generate dummy prediction logic
-    final random = Random();
-    
-    // Base cost per day per traveler based on style
-    double baseCost = 2000.0;
-    if (style == 'Luxury') baseCost = 8000.0;
-    if (style == 'Standard') baseCost = 4000.0;
+    try {
+      String transport = 'Train';
+      String hotel = 'Standard';
+      if (style == 'Budget') {
+        transport = 'Bus';
+        hotel = 'Budget';
+      } else if (style == 'Luxury') {
+        transport = 'Flight';
+        hotel = 'Luxury';
+      }
 
-    final dummyDuration = random.nextInt(7) + 3; // 3 to 9 days
-    final dummyCost = baseCost * dummyDuration * travelers;
-    final dummyConfidence = 0.75 + (random.nextDouble() * 0.2); // 0.75 to 0.95
+      final costRes = await ApiService.postRequest('/api/ml/predict-cost', {
+        'destination': destination.trim(),
+        'trip_days': 5, 
+        'travelers_count': travelers,
+        'transport_mode': transport,
+        'season': 'Winter',
+        'hotel_type': hotel,
+        'traveler_type': style == 'Budget' ? 'Budget Traveler' : (style == 'Luxury' ? 'Luxury Vacationer' : 'Family Explorer')
+      });
 
-    final prediction = TripPrediction(
-      estimatedCost: dummyCost,
-      estimatedDurationDays: dummyDuration,
-      confidenceScore: dummyConfidence,
-    );
+      if (costRes.statusCode != 200) {
+        throw Exception(jsonDecode(costRes.body)['detail'] ?? "Cost Prediction Failed");
+      }
+      
+      final costData = jsonDecode(costRes.body);
+      final estimatedCost = (costData['predicted_cost_inr'] as num).toDouble();
 
-    state = state.copyWith(isLoading: false, prediction: prediction);
+      
+
+      final prediction = TripPrediction(
+        estimatedCost: estimatedCost,
+        estimatedDurationDays: (costData['assumed_days'] as num).toInt(),
+        confidenceScore: 0.91, 
+      );
+
+      state = state.copyWith(isLoading: false, prediction: prediction);
+    } catch (e) {
+      state = state.copyWith(isLoading: false, error: e.toString().replaceAll("Exception: ", ""));
+    }
   }
 }
 
