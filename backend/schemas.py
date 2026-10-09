@@ -108,3 +108,8 @@ class RecommendedDestination(BaseModel):
 class RecommendationResponse(BaseModel):
     traveler_type: str
     recommendations: list[RecommendedDestination]
+
+class SegmentationResponse(BaseModel):
+    total_trips: int
+    avg_budget: float
+    traveler_segment: str

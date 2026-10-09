@@ -133,3 +133,14 @@ def get_destination_recommendations(traveler_type: str, top_n: int = 3):
             
     return recs["destination"].tolist()
 
+
+def segment_traveler(total_trips: int, avg_budget: float) -> str:
+    if total_trips == 0:
+        return "New Traveler"
+        
+    if avg_budget > 55000:
+        return "Luxury Travelers"
+    elif total_trips > 11:
+        return "Frequent Backpackers"
+    else:
+        return "Standard Travelers"
