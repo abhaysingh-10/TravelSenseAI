@@ -125,3 +125,22 @@ class GenerateItineraryResponse(BaseModel):
     days: int
     itinerary_text: str
 
+
+
+from typing import Dict, List
+
+class CategorySpend(BaseModel):
+    category: str
+    amount: float
+
+class MonthlySpend(BaseModel):
+    month: str
+    amount: float
+
+class DashboardAnalytics(BaseModel):
+    totalLifetimeSpent: float
+    averageCostPerTrip: float
+    totalTrips: int
+    spendingByCategory: Dict[str, float]
+    monthlySpending: Dict[str, float]
+

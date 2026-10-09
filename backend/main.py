@@ -348,3 +348,54 @@ def generate_itinerary(request: schemas.GenerateItineraryRequest, db: Session = 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+@app.get("/api/analytics/dashboard", response_model=schemas.DashboardAnalytics)
+def get_dashboard_analytics(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    try:
+        import datetime
+        
+        # Get overall totals
+        trips = db.query(models.Trip).filter(models.Trip.user_id == current_user.id).all()
+        total_trips = len(trips)
+        totalLifetimeSpent = sum((t.spent or 0.0) for t in trips)
+        averageCostPerTrip = (totalLifetimeSpent / total_trips) if total_trips > 0 else 0.0
+        
+        # Category Breakdown
+        expenses = db.query(models.Expense).filter(models.Expense.user_id == current_user.id).all()
+        
+        spendingByCategory = {}
+        for exp in expenses:
+            cat = exp.category or "Other"
+            spendingByCategory[cat] = spendingByCategory.get(cat, 0.0) + (exp.amount or 0.0)
+            
+        # Monthly Trends (Last 6 Months)
+        monthlySpending = {}
+        today = datetime.date.today()
+        
+        for i in range(5, -1, -1):
+            m = today.month - i
+            y = today.year
+            if m <= 0:
+                m += 12
+                y -= 1
+            d = datetime.date(y, m, 1)
+            month_str = d.strftime("%b") # e.g. "Jan", "Feb" matching Flutter dummy data
+            monthlySpending[month_str] = 0.0
+            
+        for trip in trips:
+            if trip.start_date:
+                m_str = trip.start_date.strftime("%b")
+                if m_str in monthlySpending:
+                    monthlySpending[m_str] += (trip.spent or 0.0)
+                    
+        return {
+            "totalTrips": total_trips,
+            "totalLifetimeSpent": round(totalLifetimeSpent, 2),
+            "averageCostPerTrip": round(averageCostPerTrip, 2),
+            "spendingByCategory": spendingByCategory,
+            "monthlySpending": monthlySpending
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
