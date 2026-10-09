@@ -5,8 +5,8 @@ import os
 
 # Get the absolute path to the project root
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, 'agent', 'models', 'cost_prediction_rf.pkl')
-DATA_PATH = os.path.join(BASE_DIR, 'agent', 'dataset', 'data', 'travelsense_india_trips.csv')
+MODEL_PATH = os.path.join(BASE_DIR, 'backend', 'ml_data', 'cost_prediction_rf.pkl')
+DATA_PATH = os.path.join(BASE_DIR, 'backend', 'ml_data', 'travelsense_india_trips.csv')
 
 # 1. Load the AI Brain
 try:
@@ -59,7 +59,7 @@ def predict_trip_cost(destination, trip_days, travelers_count, transport_mode, h
     return round(predicted_cost, 2)
 
 #  Load the Duration Prediction Model
-DURATION_MODEL_PATH = os.path.join(BASE_DIR, 'agent', 'models', 'duration_prediction_rf.pkl')
+DURATION_MODEL_PATH = os.path.join(BASE_DIR, 'backend', 'ml_data', 'duration_prediction_rf.pkl')
 try:
     duration_model = joblib.load(DURATION_MODEL_PATH)
 except Exception as e:
