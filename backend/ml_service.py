@@ -27,8 +27,11 @@ def predict_trip_cost(destination, trip_days, travelers_count, transport_mode, h
     if cost_model is None:
         raise ValueError("Model not loaded. Check server logs.")
         
+    destination = destination.title().strip()
     if destination not in destination_lookup.index:
-        raise ValueError(f"Unknown destination: {destination}")
+        # Fallback to a median destination so the app never crashes
+        destination = "Jaipur"
+
         
     dest_data = destination_lookup.loc[destination]
     
@@ -70,8 +73,11 @@ def predict_trip_duration(destination, total_cost_inr, travelers_count, transpor
     if duration_model is None:
         raise ValueError("Duration model not loaded.")
         
+    destination = destination.title().strip()
     if destination not in destination_lookup.index:
-        raise ValueError(f"Unknown destination: {destination}")
+        # Fallback to a median destination so the app never crashes
+        destination = "Jaipur"
+
         
     dest_data = destination_lookup.loc[destination]
     
