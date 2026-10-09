@@ -78,8 +78,16 @@ class PredictorNotifier extends Notifier<PredictorState> {
       );
 
       state = state.copyWith(isLoading: false, prediction: prediction);
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString().replaceAll("Exception: ", ""));
+        } catch (e) {
+      String rawError = e.toString();
+      String safeError = "Unable to connect to the AI model. Please check your internet and try again.";
+      
+      // If it's a clean user-facing error from our backend logic (like missing fields, or custom ValueError)
+      if (!rawError.contains("FormatException") && !rawError.contains("TypeError") && !rawError.contains("Internal Server Error")) {
+          safeError = rawError.replaceAll("Exception: ", "");
+      }
+      
+      state = state.copyWith(isLoading: false, error: safeError);
     }
   }
 }
