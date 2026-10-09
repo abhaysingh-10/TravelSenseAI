@@ -231,6 +231,8 @@ from ml_service import predict_trip_cost, predict_trip_duration
 @app.post("/api/ml/predict-cost", response_model=schemas.CostPredictionResponse)
 def get_cost_prediction(request: schemas.CostPredictionRequest):
     try:
+        from ml_service import predict_trip_cost, destination_lookup, dest_stats
+        
         cost = predict_trip_cost(
             destination=request.destination,
             trip_days=request.trip_days,
@@ -240,7 +242,14 @@ def get_cost_prediction(request: schemas.CostPredictionRequest):
             season=request.season,
             traveler_type=request.traveler_type
         )
-        return {"predicted_cost_inr": cost}
+        
+        destination = request.destination.title().strip()
+        if destination not in destination_lookup.index:
+            destination = "Jaipur"
+        avg_days_row = dest_stats[dest_stats['destination'] == destination]
+        assumed_days = int(round(avg_days_row['avg_days'].values[0])) if not avg_days_row.empty else 4
+        
+        return {"predicted_cost_inr": round(float(cost), 2), "assumed_days": assumed_days}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
