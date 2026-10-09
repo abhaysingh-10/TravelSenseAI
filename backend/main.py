@@ -299,3 +299,31 @@ def get_ml_recommendations(request: schemas.RecommendationRequest, db: Session =
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+from ml_service import segment_traveler
+
+@app.get("/api/ml/segmentation", response_model=schemas.SegmentationResponse)
+def get_user_segmentation(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    try:
+        # Fetch all trips for the current user
+        trips = db.query(models.Trip).filter(models.Trip.user_id == current_user.id).all()
+        
+        total_trips = len(trips)
+        avg_budget = 0.0
+        
+        if total_trips > 0:
+            total_budget = sum((trip.budget or 0.0) for trip in trips)
+            avg_budget = total_budget / total_trips
+            
+        # Get the segment from the ML logic
+        segment = segment_traveler(total_trips, avg_budget)
+        
+        return {
+            "total_trips": total_trips,
+            "avg_budget": round(avg_budget, 2),
+            "traveler_segment": segment
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
