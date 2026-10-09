@@ -100,3 +100,36 @@ def predict_trip_duration(destination, total_cost_inr, travelers_count, transpor
             
     predicted_duration = duration_model.predict(input_df)[0]
     return round(predicted_duration) # Return as whole number of days
+
+
+# -----------------
+# RECOMMENDATION ENGINE
+# -----------------
+try:
+    # We group by destination to calculate average cost and days
+    dest_stats = df.groupby("destination").agg(
+        avg_cost=("total_cost_inr", "mean"),
+        avg_days=("trip_days", "mean")
+    ).reset_index()
+except Exception as e:
+    print(f"Error calculating dest_stats: {e}")
+    dest_stats = pd.DataFrame()
+
+def get_destination_recommendations(traveler_type: str, top_n: int = 3):
+    if dest_stats.empty:
+        return []
+        
+    if traveler_type.lower() == "luxury travelers":
+        recs = dest_stats.sort_values(by="avg_cost", ascending=False).head(top_n)
+    elif traveler_type.lower() == "frequent backpackers":
+        recs = dest_stats.sort_values(by="avg_cost", ascending=True).head(top_n)
+    else:
+        # Standard Travelers (middle ground)
+        recs = dest_stats[(dest_stats["avg_cost"] > 30000) & (dest_stats["avg_cost"] < 50000)].head(top_n)
+        
+        # Fallback if standard filters yield nothing
+        if recs.empty:
+            recs = dest_stats.head(top_n)
+            
+    return recs["destination"].tolist()
+
