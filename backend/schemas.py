@@ -113,3 +113,15 @@ class SegmentationResponse(BaseModel):
     total_trips: int
     avg_budget: float
     traveler_segment: str
+
+
+class GenerateItineraryRequest(BaseModel):
+    destination: str
+    days: int
+    traveler_type: Optional[str] = "Standard Traveler"
+
+class GenerateItineraryResponse(BaseModel):
+    destination: str
+    days: int
+    itinerary_text: str
+

@@ -144,3 +144,39 @@ def segment_traveler(total_trips: int, avg_budget: float) -> str:
         return "Frequent Backpackers"
     else:
         return "Standard Travelers"
+
+
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Configure Gemini
+GENAI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GENAI_API_KEY:
+    genai.configure(api_key=GENAI_API_KEY)
+else:
+    print("WARNING: GEMINI_API_KEY not found in environment.")
+
+def generate_itinerary_with_ai(destination: str, days: int, traveler_type: str = "Standard Traveler") -> str:
+    """Calls Gemini API to generate a multi-day itinerary."""
+    if not GENAI_API_KEY:
+        return "Error: AI generation is currently unavailable (Missing API Key)."
+        
+    try:
+        model = genai.GenerativeModel("gemini-3.8-flash")
+        
+        prompt = f"""
+        You are an expert travel agent. 
+        Create a realistic, day-by-day itinerary for a {days}-day trip to {destination}.
+        The user's travel style is: {traveler_type}. 
+        Keep it concise, actionable, and formatted nicely with bullet points.
+        Do not include intro or outro filler text, just the itinerary.
+        """
+        
+        response = model.generate_content(prompt)
+        return response.text
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return f"Error generating itinerary for {destination}. Please try again later."
+

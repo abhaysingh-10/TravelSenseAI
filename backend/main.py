@@ -327,3 +327,24 @@ def get_user_segmentation(db: Session = Depends(get_db), current_user: models.Us
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+
+from ml_service import generate_itinerary_with_ai
+
+@app.post("/api/ml/generate-itinerary", response_model=schemas.GenerateItineraryResponse)
+def generate_itinerary(request: schemas.GenerateItineraryRequest, db: Session = Depends(get_db)):
+    try:
+        itinerary_text = generate_itinerary_with_ai(
+            destination=request.destination,
+            days=request.days,
+            traveler_type=request.traveler_type
+        )
+        
+        return {
+            "destination": request.destination,
+            "days": request.days,
+            "itinerary_text": itinerary_text
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
