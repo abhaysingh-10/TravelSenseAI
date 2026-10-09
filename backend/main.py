@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.staticfiles import StaticFiles
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 import models, schemas, auth
@@ -15,6 +16,8 @@ app = FastAPI(title="TravelSense AI API")
 ''' CORS CONFIGURATION 
 This allows our Flutter app 
  to communicate with this backend without getting blocked by security rules.'''
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, replace "*" with  app's actual URL
@@ -107,13 +110,22 @@ async def calculate_distance(origin: str, destination: str):
 @app.post("/trips", response_model=schemas.TripOut)
 async def create_trip(trip: schemas.TripCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     weather = await get_weather_for_city(trip.destination)
-    image_url = await get_image_for_city(trip.destination)
     
-    # Dump trip payload and overwrite weather_temp and image_url
+    # TIER 1: Check Database for Authentic Scraped Image
+    db_dest = db.query(models.Destination).filter(models.Destination.name.ilike(trip.destination)).first()
+    if db_dest and db_dest.image_url:
+        image_url = db_dest.image_url
+    else:
+        # TIER 2: Live Wikipedia Search Fallback
+        image_url = await get_image_for_city(trip.destination)
+        
+    # TIER 3: Custom TravelSense Airplane Fallback
+    if not image_url:
+        image_url = "https://travelsenseai-wiiy.onrender.com/static/images/fallback_airplane.jpg"
+    
     trip_data = trip.model_dump()
     trip_data['weather_temp'] = int(round(weather))
-    if image_url:
-        trip_data['image_url'] = image_url
+    trip_data['image_url'] = image_url
     
     new_trip = models.Trip(**trip_data, user_id=current_user.id)
     db.add(new_trip)
