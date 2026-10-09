@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/segmentation_provider.dart';
 import 'login_screen.dart';
 
 class PreferencesNotifier extends Notifier<List<String>> {
@@ -95,7 +96,7 @@ class ProfileScreen extends ConsumerWidget {
               const SizedBox(height: 24),
 
               // Traveler Segment Card
-              _buildSegmentCard(context),
+              _buildSegmentCard(context, ref),
               const SizedBox(height: 48),
 
               // Logout Button
@@ -308,7 +309,10 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSegmentCard(BuildContext context) {
+  Widget _buildSegmentCard(BuildContext context, WidgetRef ref) {
+    final segState = ref.watch(segmentationProvider);
+    final segment = segState.isLoading ? 'Analyzing trips...' : segState.segment;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -351,7 +355,7 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'Frequent Budget Traveler',
+                  segment,
                   style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -359,7 +363,7 @@ class ProfileScreen extends ConsumerWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'You love exploring new places without overspending.',
+                  'Based on your past trips, spending habits, and travel frequency.',
                   style:
                       TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),
                 ),
