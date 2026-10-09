@@ -263,3 +263,39 @@ def get_duration_prediction(request: schemas.DurationPredictionRequest):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred during prediction.")
+
+
+from ml_service import get_destination_recommendations
+
+@app.post("/api/ml/recommendations", response_model=schemas.RecommendationResponse)
+def get_ml_recommendations(request: schemas.RecommendationRequest, db: Session = Depends(get_db)):
+    try:
+        # 1. Get destination names from our ML Engine
+        rec_names = get_destination_recommendations(request.traveler_type, request.top_n)
+        
+        # 2. Fetch enriched data (image, description) from PostgreSQL
+        destinations = db.query(models.Destination).filter(models.Destination.name.in_(rec_names)).all()
+        
+        # Build the final response
+        results = []
+        # Maintain the order of recommendations from the ML engine
+        for name in rec_names:
+            dest = next((d for d in destinations if d.name == name), None)
+            if dest:
+                results.append({
+                    "name": dest.name,
+                    "description": dest.description,
+                    "image_url": dest.image_url
+                })
+            else:
+                # Fallback if the destination isn't in DB for some reason
+                results.append({
+                    "name": name,
+                    "description": "A beautiful destination.",
+                    "image_url": None
+                })
+                
+        return {"traveler_type": request.traveler_type, "recommendations": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
