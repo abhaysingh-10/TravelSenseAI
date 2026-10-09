@@ -105,4 +105,4 @@ async def get_image_for_city(city_name: str) -> str:
             print(f"Image Fetch Error: {e}")
             
     # Return an invalid URL so Flutter triggers errorBuilder safely (empty strings can cause assertion crashes)
-    return None
+    return "http://invalid.url/image.png"
