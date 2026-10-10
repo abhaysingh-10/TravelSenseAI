@@ -17,6 +17,7 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
   final _destinationController = TextEditingController();
   String _selectedStyle = 'Standard';
   int _travelers = 1;
+  int _days = 4;
 
   final List<String> _styles = ['Budget', 'Standard', 'Luxury'];
 
@@ -34,6 +35,7 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
       _selectedStyle,
       _travelers,
       source: _sourceController.text,
+      tripDays: _days,
     );
   }
 
@@ -83,7 +85,7 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomInputField(
-                      labelText: 'Where are you leaving from? (Optional)',
+                      labelText: 'Where are you leaving from?',
                       controller: _sourceController,
                     ),
                     const SizedBox(height: 20),
@@ -111,6 +113,20 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
                           },
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 20),
+
+                                        Text('Number of Days: $_days', style: Theme.of(context).textTheme.labelMedium),
+                    Slider(
+                      value: _days.toDouble(),
+                      min: 1,
+                      max: 30,
+                      divisions: 29,
+                      activeColor: Theme.of(context).primaryColor,
+                      label: _days.toString(),
+                      onChanged: (val) {
+                        setState(() => _days = val.toInt());
+                      },
                     ),
                     const SizedBox(height: 20),
 
