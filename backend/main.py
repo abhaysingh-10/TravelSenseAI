@@ -284,7 +284,7 @@ async def get_cost_prediction(request: schemas.CostPredictionRequest):
             real_distance_km=real_distance
         )
         
-        return {"predicted_cost_inr": round(float(cost), 2), "assumed_days": assumed_days}
+        return {"predicted_cost_inr": round(float(cost), 2), "assumed_days": actual_days}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
