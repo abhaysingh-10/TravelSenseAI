@@ -75,7 +75,7 @@ class ExpenseOut(ExpenseBase):
 class CostPredictionRequest(BaseModel):
     source: Optional[str] = None
     destination: str
-    trip_days: int
+    trip_days: Optional[int] = None
     travelers_count: int
     transport_mode: str
     hotel_type: str
@@ -96,7 +96,7 @@ class DurationPredictionRequest(BaseModel):
     traveler_type: str
 
 class DurationPredictionResponse(BaseModel):
-    predicted_trip_days: int
+    predicted_trip_days: Optional[int] = None
 
 class RecommendationRequest(BaseModel):
     traveler_type: str

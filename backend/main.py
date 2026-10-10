@@ -242,9 +242,18 @@ async def get_cost_prediction(request: schemas.CostPredictionRequest):
             if dist and dist > 0:
                 real_distance = dist
                 
+        destination = request.destination.title().strip()
+        if destination not in destination_lookup.index:
+            destination = "Jaipur"
+        avg_days_row = dest_stats[dest_stats['destination'] == destination]
+        assumed_days = int(round(avg_days_row['avg_days'].values[0])) if not avg_days_row.empty else 4
+        
+        # Use assumed_days if flutter doesn't provide trip_days
+        actual_days = request.trip_days if request.trip_days else assumed_days
+        
         cost = predict_trip_cost(
             destination=request.destination,
-            trip_days=request.trip_days,
+            trip_days=actual_days,
             travelers_count=request.travelers_count,
             transport_mode=request.transport_mode,
             hotel_type=request.hotel_type,
@@ -252,12 +261,6 @@ async def get_cost_prediction(request: schemas.CostPredictionRequest):
             traveler_type=request.traveler_type,
             real_distance_km=real_distance
         )
-        
-        destination = request.destination.title().strip()
-        if destination not in destination_lookup.index:
-            destination = "Jaipur"
-        avg_days_row = dest_stats[dest_stats['destination'] == destination]
-        assumed_days = int(round(avg_days_row['avg_days'].values[0])) if not avg_days_row.empty else 4
         
         return {"predicted_cost_inr": round(float(cost), 2), "assumed_days": assumed_days}
     except ValueError as e:
