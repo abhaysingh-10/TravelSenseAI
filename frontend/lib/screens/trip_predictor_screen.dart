@@ -22,6 +22,7 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
 
   @override
   void dispose() {
+    _sourceController.dispose();
     _destinationController.dispose();
     super.dispose();
   }
@@ -81,6 +82,11 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    CustomInputField(
+                      labelText: 'Where are you leaving from? (Optional)',
+                      controller: _sourceController,
+                    ),
+                    const SizedBox(height: 20),
                     CustomInputField(
                       labelText: 'Where do you want to go?',
                       controller: _destinationController,
