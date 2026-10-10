@@ -33,7 +33,7 @@ class PredictorNotifier extends Notifier<PredictorState> {
     return PredictorState();
   }
 
-  Future<void> predictTrip(String destination, String style, int travelers) async {
+  Future<void> predictTrip(String destination, String style, int travelers, {String? source}) async {
     state = state.copyWith(isLoading: true, error: null, prediction: null);
 
     if (destination.trim().isEmpty) {

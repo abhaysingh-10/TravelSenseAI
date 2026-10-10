@@ -28,10 +28,11 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
 
   void _runPrediction() {
     FocusScope.of(context).unfocus();
-    ref.read(predictorProvider.notifier).predictTrip(source: _sourceController.text,
+    ref.read(predictorProvider.notifier).predictTrip(
       _destinationController.text,
       _selectedStyle,
       _travelers,
+      source: _sourceController.text,
     );
   }
 
@@ -177,7 +178,7 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment:  MainAxisAlignment.spaceBetween,
                         children: [
                           const Text(
                             'AI PREDICTION',
