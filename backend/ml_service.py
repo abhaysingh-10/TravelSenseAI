@@ -23,7 +23,7 @@ except Exception as e:
     print(f"Error loading data from {DATA_PATH}: {e}")
     destination_lookup = pd.DataFrame()
 
-def predict_trip_cost(destination, trip_days, travelers_count, transport_mode, hotel_type, season, traveler_type, user_rating=4.0):
+def predict_trip_cost(destination, trip_days, travelers_count, transport_mode, hotel_type, season, traveler_type, user_rating=4.0, real_distance_km=None):
     if cost_model is None:
         raise ValueError("Model not loaded. Check server logs.")
         
@@ -39,8 +39,12 @@ def predict_trip_cost(destination, trip_days, travelers_count, transport_mode, h
     input_df = pd.DataFrame(columns=features)
     input_df.loc[0] = 0.0 
     
-    input_df.at[0, 'distance_km'] = dest_data['distance_km']
-    input_df.at[0, 'travel_duration_hours'] = dest_data['travel_duration_hours']
+    if real_distance_km and real_distance_km > 0:
+        input_df.at[0, 'distance_km'] = real_distance_km
+        input_df.at[0, 'travel_duration_hours'] = round(real_distance_km / 65.0, 2)  # Assume avg 65km/h in India
+    else:
+        input_df.at[0, 'distance_km'] = dest_data['distance_km']
+        input_df.at[0, 'travel_duration_hours'] = dest_data['travel_duration_hours']
     input_df.at[0, 'trip_days'] = trip_days
     input_df.at[0, 'travelers_count'] = travelers_count
     input_df.at[0, 'user_rating'] = user_rating
@@ -85,8 +89,12 @@ def predict_trip_duration(destination, total_cost_inr, travelers_count, transpor
     input_df = pd.DataFrame(columns=features)
     input_df.loc[0] = 0.0 
     
-    input_df.at[0, 'distance_km'] = dest_data['distance_km']
-    input_df.at[0, 'travel_duration_hours'] = dest_data['travel_duration_hours']
+    if real_distance_km and real_distance_km > 0:
+        input_df.at[0, 'distance_km'] = real_distance_km
+        input_df.at[0, 'travel_duration_hours'] = round(real_distance_km / 65.0, 2)  # Assume avg 65km/h in India
+    else:
+        input_df.at[0, 'distance_km'] = dest_data['distance_km']
+        input_df.at[0, 'travel_duration_hours'] = dest_data['travel_duration_hours']
     input_df.at[0, 'total_cost_inr'] = total_cost_inr
     input_df.at[0, 'travelers_count'] = travelers_count
     input_df.at[0, 'user_rating'] = user_rating

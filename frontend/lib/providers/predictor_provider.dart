@@ -54,6 +54,7 @@ class PredictorNotifier extends Notifier<PredictorState> {
 
       final costRes = await ApiService.postRequest('/api/ml/predict-cost', {
         'destination': destination.trim(),
+        'source': source?.trim(),
         'trip_days': 5, 
         'travelers_count': travelers,
         'transport_mode': transport,

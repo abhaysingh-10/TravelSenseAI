@@ -229,10 +229,19 @@ def delete_expense(expense_id: int, db: Session = Depends(get_db), current_user:
 from ml_service import predict_trip_cost, predict_trip_duration
 
 @app.post("/api/ml/predict-cost", response_model=schemas.CostPredictionResponse)
-def get_cost_prediction(request: schemas.CostPredictionRequest):
+async def get_cost_prediction(request: schemas.CostPredictionRequest):
     try:
         from ml_service import predict_trip_cost, destination_lookup, dest_stats
         
+        
+        real_distance = None
+        if request.source and request.destination:
+            from services import get_distance_between_cities
+            # OpenRouteService call
+            dist = await get_distance_between_cities(request.source, request.destination)
+            if dist and dist > 0:
+                real_distance = dist
+                
         cost = predict_trip_cost(
             destination=request.destination,
             trip_days=request.trip_days,
@@ -240,7 +249,8 @@ def get_cost_prediction(request: schemas.CostPredictionRequest):
             transport_mode=request.transport_mode,
             hotel_type=request.hotel_type,
             season=request.season,
-            traveler_type=request.traveler_type
+            traveler_type=request.traveler_type,
+            real_distance_km=real_distance
         )
         
         destination = request.destination.title().strip()

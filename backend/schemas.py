@@ -73,6 +73,7 @@ class ExpenseOut(ExpenseBase):
 # ML PREDICTION SCHEMAS
 # -----------------
 class CostPredictionRequest(BaseModel):
+    source: Optional[str] = None
     destination: str
     trip_days: int
     travelers_count: int

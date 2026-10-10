@@ -13,6 +13,7 @@ class TripPredictorScreen extends ConsumerStatefulWidget {
 }
 
 class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
+  final _sourceController = TextEditingController();
   final _destinationController = TextEditingController();
   String _selectedStyle = 'Standard';
   int _travelers = 1;
@@ -27,7 +28,7 @@ class _TripPredictorScreenState extends ConsumerState<TripPredictorScreen> {
 
   void _runPrediction() {
     FocusScope.of(context).unfocus();
-    ref.read(predictorProvider.notifier).predictTrip(
+    ref.read(predictorProvider.notifier).predictTrip(source: _sourceController.text,
       _destinationController.text,
       _selectedStyle,
       _travelers,
