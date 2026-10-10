@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 import httpx
+import urllib.parse
 
 WEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 ROUTE_API_KEY = os.getenv("OPENROUTE_API_KEY")
@@ -35,7 +36,7 @@ async def geocode_city(city_name: str):
     if not ROUTE_API_KEY:
         return None
 
-    url = f"https://api.openrouteservice.org/geocode/search?api_key={ROUTE_API_KEY}&text={city_name}"
+    url = f"https://api.openrouteservice.org/geocode/search?api_key={ROUTE_API_KEY}&text={urllib.parse.quote(city_name)}"
     
     async with httpx.AsyncClient() as client:
         try:

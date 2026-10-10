@@ -228,11 +228,30 @@ def delete_expense(expense_id: int, db: Session = Depends(get_db), current_user:
 # -----------------
 from ml_service import predict_trip_cost, predict_trip_duration
 
+
+def normalize_destination(dest: str, lookup_index) -> str:
+    dest = dest.title().strip()
+    if dest in lookup_index:
+        return dest
+    # Try splitting by comma
+    first_part = dest.split(',')[0].strip()
+    if first_part in lookup_index:
+        return first_part
+    # Try checking if any known destination is a substring
+    for known in lookup_index:
+        if known.lower() in dest.lower():
+            return known
+    return "Jaipur" # Fallback
+
 @app.post("/api/ml/predict-cost", response_model=schemas.CostPredictionResponse)
 async def get_cost_prediction(request: schemas.CostPredictionRequest):
     try:
         from ml_service import predict_trip_cost, destination_lookup, dest_stats
         
+        
+        normalized_dest = normalize_destination(request.destination, destination_lookup.index)
+        avg_days_row = dest_stats[dest_stats['destination'] == normalized_dest]
+        assumed_days = int(round(avg_days_row['avg_days'].values[0])) if not avg_days_row.empty else 4
         
         real_distance = None
         if request.source and request.destination:
@@ -241,22 +260,25 @@ async def get_cost_prediction(request: schemas.CostPredictionRequest):
             dist = await get_distance_between_cities(request.source, request.destination)
             if dist and dist > 0:
                 real_distance = dist
-                
-        destination = request.destination.title().strip()
-        if destination not in destination_lookup.index:
-            destination = "Jaipur"
-        avg_days_row = dest_stats[dest_stats['destination'] == destination]
-        assumed_days = int(round(avg_days_row['avg_days'].values[0])) if not avg_days_row.empty else 4
         
         # Use assumed_days if flutter doesn't provide trip_days
         actual_days = request.trip_days if request.trip_days else assumed_days
         
+        
+        # Map Flutter labels to dataset labels
+        hotel_mapping = {
+            "Budget": "Budget Hotel",
+            "Standard": "Mid-Range 3-Star",
+            "Luxury": "Luxury Resort"
+        }
+        mapped_hotel = hotel_mapping.get(request.hotel_type, request.hotel_type)
+
         cost = predict_trip_cost(
             destination=request.destination,
             trip_days=actual_days,
             travelers_count=request.travelers_count,
             transport_mode=request.transport_mode,
-            hotel_type=request.hotel_type,
+            hotel_type=mapped_hotel,
             season=request.season,
             traveler_type=request.traveler_type,
             real_distance_km=real_distance
@@ -271,12 +293,19 @@ async def get_cost_prediction(request: schemas.CostPredictionRequest):
 @app.post("/api/ml/predict-duration", response_model=schemas.DurationPredictionResponse)
 def get_duration_prediction(request: schemas.DurationPredictionRequest):
     try:
+        hotel_mapping = {
+            "Budget": "Budget Hotel",
+            "Standard": "Mid-Range 3-Star",
+            "Luxury": "Luxury Resort"
+        }
+        mapped_hotel = hotel_mapping.get(request.hotel_type, request.hotel_type)
+
         days = predict_trip_duration(
             destination=request.destination,
             total_cost_inr=request.total_cost_inr,
             travelers_count=request.travelers_count,
             transport_mode=request.transport_mode,
-            hotel_type=request.hotel_type,
+            hotel_type=mapped_hotel,
             season=request.season,
             traveler_type=request.traveler_type
         )
