@@ -92,15 +92,27 @@ class _AIPicksCarouselState extends ConsumerState<AIPicksCarousel> {
                         offset: const Offset(0, 10),
                       ),
                     ],
-                    image: DecorationImage(
-                      image: NetworkImage(dest.imageUrl),
-                      fit: BoxFit.cover,
-                      filterQuality: FilterQuality.medium,
-                    ),
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Stack(
+                    fit: StackFit.expand,
                     children: [
+                      Image.network(
+                        dest.imageUrl,
+                        fit: BoxFit.cover,
+                        filterQuality: FilterQuality.medium,
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                          'assets/images/fallback_suitcase.jpg',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, err, stack) => Container(
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(

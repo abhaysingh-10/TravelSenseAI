@@ -66,10 +66,16 @@ class RecommendationsScreen extends ConsumerWidget {
                         width: double.infinity,
                         fit: BoxFit.cover,
                         filterQuality: FilterQuality.medium,
-                        errorBuilder: (context, err, stack) => Container(
+                        errorBuilder: (context, err, stack) => Image.asset(
+                          'assets/images/fallback_suitcase.jpg',
                           height: 200,
-                          color: Colors.grey.shade200,
-                          child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, e, s) => Container(
+                            height: 200,
+                            color: Colors.grey.shade200,
+                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                          ),
                         ),
                       ),
                       Positioned(
