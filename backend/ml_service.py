@@ -206,20 +206,25 @@ def generate_itinerary_with_ai(destination: str, days: int, traveler_type: str =
     ]
     
     prompt = f"""
-    You are an expert travel agent. 
-    Create a realistic, day-by-day itinerary for a {days}-day trip to {destination}.
+    You are an expert travel concierge. 
+    Create a comprehensive, highly engaging day-by-day itinerary for a {days}-day trip to {destination}.
     The user's travel style is: {traveler_type}. 
-    Format each day clearly starting with:
-    Day 1: [Day Title]
+
+    For EACH day (Day 1 through Day {days}), provide 2 to 3 distinct, high-value activities for Morning, Afternoon, and Evening. Include specific landmark names, regional food or restaurant recommendations, and viewpoints.
+
+    Format strictly as:
+    Day 1: [Catchy Area Focus / Theme]
     - Morning:
-      - [Activity]
+      - [Activity 1: Landmark or primary highlight]
+      - [Activity 2: Coffee, breakfast spot, or secondary sight]
     - Afternoon:
-      - [Activity]
+      - [Activity 1: Local lunch recommendation]
+      - [Activity 2: Afternoon attraction or scenic experience]
     - Evening:
-      - [Activity]
-    Repeat for all {days} days.
-    Keep it concise, actionable, and formatted nicely with bullet points.
-    Do not include intro or outro conversational filler text, just the itinerary.
+      - [Activity 1: Sunset spot or cultural walk]
+      - [Activity 2: Authentic dinner recommendation or night activity]
+
+    Repeat this detailed structure for all {days} days. Do not skip days. Do not include introductory or closing filler text, just the itinerary.
     """
     
     for model_name in models_to_try:
