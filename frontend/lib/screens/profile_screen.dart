@@ -61,33 +61,45 @@ class ProfileScreen extends ConsumerWidget {
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
               ),
               const SizedBox(height: 16),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: Theme.of(context)
-                          .primaryColor
-                          .withValues(alpha: 0.2)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.local_mall_outlined,
-                        size: 16, color: Theme.of(context).primaryColor),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Budget Traveler',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
+              Consumer(
+                builder: (context, ref, _) {
+                  final segState = ref.watch(segmentationProvider);
+                  final segment = segState.isLoading ? 'Analyzing...' : segState.segment;
+                  IconData icon = Icons.luggage_outlined;
+                  if (segment.contains('Luxury')) {
+                    icon = Icons.diamond_outlined;
+                  } else if (segment.contains('Backpacker')) {
+                    icon = Icons.hiking_outlined;
+                  } else if (segment.contains('New')) {
+                    icon = Icons.explore_outlined;
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.2),
                       ),
                     ),
-                  ],
-                ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(icon, size: 16, color: Theme.of(context).primaryColor),
+                        const SizedBox(width: 6),
+                        Text(
+                          segment,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
               const SizedBox(height: 32),
 
