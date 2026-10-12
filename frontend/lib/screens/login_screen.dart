@@ -248,6 +248,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      autocorrect: false,
+      enableSuggestions: false,
       style:
           const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87),
       decoration: InputDecoration(
