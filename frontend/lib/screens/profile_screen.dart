@@ -36,9 +36,14 @@ class ProfileScreen extends ConsumerWidget {
         ),
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: Column(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(segmentationProvider.notifier).fetchSegment();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Profile Header
@@ -154,7 +159,8 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 
   Widget _buildInfoCard(BuildContext context, user, WidgetRef ref) {
