@@ -22,9 +22,13 @@ class RecommendationsScreen extends ConsumerWidget {
         iconTheme: const IconThemeData(color: Color(0xFF111418)),
       ),
       body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.all(24),
-          itemCount: destinations.length,
+        child: RefreshIndicator(
+          onRefresh: () async {
+            await ref.read(recommendationProvider.notifier).fetchRecommendations();
+          },
+          child: ListView.builder(
+            padding: const EdgeInsets.all(24),
+            itemCount: destinations.length,
           itemBuilder: (context, index) {
             final dest = destinations[index];
             return GestureDetector(
@@ -133,8 +137,9 @@ class RecommendationsScreen extends ConsumerWidget {
             ),
           );
         },
-        ),
       ),
-    );
+    ),
+  ),
+);
   }
 }

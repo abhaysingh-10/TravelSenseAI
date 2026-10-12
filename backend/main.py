@@ -1,4 +1,5 @@
 import os
+from typing import Optional, List
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -316,36 +317,79 @@ def get_duration_prediction(request: schemas.DurationPredictionRequest):
         raise HTTPException(status_code=500, detail="An error occurred during prediction.")
 
 
-from ml_service import get_destination_recommendations
+from ml_service import get_destination_recommendations, dest_stats, segment_traveler
+
+def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session):
+    destinations = db.query(models.Destination).filter(models.Destination.name.in_(rec_names)).all()
+    results = []
+    scores = [0.95, 0.91, 0.88, 0.85, 0.82]
+    
+    for i, name in enumerate(rec_names):
+        dest = next((d for d in destinations if d.name == name), None)
+        stat = dest_stats[dest_stats['destination'] == name] if not dest_stats.empty else pd.DataFrame()
+        cost = float(stat['avg_cost'].values[0]) if not stat.empty else 30000.0
+        days = int(round(stat['avg_days'].values[0])) if not stat.empty else 4
+        
+        score = scores[i] if i < len(scores) else 0.80
+        desc = dest.description if dest and dest.description else f"An extraordinary destination known for scenic beauty and rich culture in {name}."
+        img = dest.image_url if dest and dest.image_url else "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+        
+        if traveler_type == "Luxury Travelers":
+            reason = "Curated for luxury explorers with premium resorts and stays."
+        elif traveler_type == "Frequent Backpackers":
+            reason = "Matches your backpacking profile with high adventure and budget stays."
+        else:
+            reason = "Curated for balanced exploration and rich cultural sights."
+            
+        results.append({
+            "id": f"rec_{i+1}",
+            "name": name,
+            "description": desc,
+            "image_url": img,
+            "match_score": score,
+            "reason": reason,
+            "estimated_budget": round(cost, 2),
+            "duration_days": days
+        })
+    return results
+
+@app.get("/api/ml/recommendations", response_model=schemas.RecommendationResponse)
+def get_ml_recommendations_get(
+    top_n: int = 4,
+    traveler_type: Optional[str] = None,
+    db: Session = Depends(get_db),
+    token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False))
+):
+    try:
+        user_segment = traveler_type
+        if not user_segment and token:
+            try:
+                payload = jwt.decode(token, auth.SECRET_KEY, algorithms=[auth.ALGORITHM])
+                email = payload.get("sub")
+                if email:
+                    user = db.query(models.User).filter(models.User.email == email).first()
+                    if user:
+                        trips = db.query(models.Trip).filter(models.Trip.user_id == user.id).all()
+                        total_trips = len(trips)
+                        avg_budget = sum([t.budget for t in trips]) / total_trips if total_trips > 0 else 0.0
+                        user_segment = segment_traveler(total_trips=total_trips, avg_budget=avg_budget)
+            except Exception:
+                pass
+                
+        if not user_segment or user_segment == "New Traveler":
+            user_segment = "Standard Travelers"
+            
+        rec_names = get_destination_recommendations(user_segment, top_n)
+        results = _enrich_recommendations(rec_names, user_segment, db)
+        return {"traveler_type": user_segment, "recommendations": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/ml/recommendations", response_model=schemas.RecommendationResponse)
 def get_ml_recommendations(request: schemas.RecommendationRequest, db: Session = Depends(get_db)):
     try:
-        # 1. Get destination names from our ML Engine
         rec_names = get_destination_recommendations(request.traveler_type, request.top_n)
-        
-        # 2. Fetch enriched data (image, description) from PostgreSQL
-        destinations = db.query(models.Destination).filter(models.Destination.name.in_(rec_names)).all()
-        
-        # Build the final response
-        results = []
-        # Maintain the order of recommendations from the ML engine
-        for name in rec_names:
-            dest = next((d for d in destinations if d.name == name), None)
-            if dest:
-                results.append({
-                    "name": dest.name,
-                    "description": dest.description,
-                    "image_url": dest.image_url
-                })
-            else:
-                # Fallback if the destination isn't in DB for some reason
-                results.append({
-                    "name": name,
-                    "description": "A beautiful destination.",
-                    "image_url": None
-                })
-                
+        results = _enrich_recommendations(rec_names, request.traveler_type, db)
         return {"traveler_type": request.traveler_type, "recommendations": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

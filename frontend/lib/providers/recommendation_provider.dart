@@ -1,43 +1,71 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/destination_model.dart';
+import '../services/api_service.dart';
 
 class RecommendationNotifier extends Notifier<List<Destination>> {
   @override
   List<Destination> build() {
-
-    return [
-      Destination(
-        id: 'd1',
-        name: 'Kyoto, Japan',
-        description: 'Famous for its classical Buddhist temples, as well as gardens, imperial palaces, Shinto shrines and traditional wooden houses.',
-        imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80',
-        matchScore: 0.94,
-        reason: 'Because you love historical sites and temperate weather.',
-        estimatedBudget: 85000.0,
-        durationDays: 7,
-      ),
-      Destination(
-        id: 'd2',
-        name: 'Santorini, Greece',
-        description: 'A beautiful island in the Aegean Sea, known for its whitewashed, cubiform houses clinging to cliffs above an underwater caldera.',
-        imageUrl: 'https://images.pexels.com/photos/161815/santorini-oia-greece-water-161815.jpeg?auto=compress&cs=tinysrgb&w=800',
-        matchScore: 0.88,
-        reason: 'Based on your high spending on coastal luxury trips.',
-        estimatedBudget: 120000.0,
-        durationDays: 5,
-      ),
-      Destination(
-        id: 'd3',
-        name: 'Banff, Canada',
-        description: 'A resort town and one of Canada\'s most popular tourist destinations, known for its mountainous surroundings and hot springs.',
-        imageUrl: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800',
-        matchScore: 0.79,
-        reason: 'Great match for your outdoor activity preferences.',
-        estimatedBudget: 95000.0,
-        durationDays: 6,
-      ),
-    ];
+    _fetchRecommendations();
+    return _initialFallbacks;
   }
+
+  Future<void> fetchRecommendations({String? travelerType}) async {
+    try {
+      final endpoint = travelerType != null
+          ? '/api/ml/recommendations?traveler_type=${Uri.encodeComponent(travelerType)}'
+          : '/api/ml/recommendations';
+      final response = await ApiService.getRequest(endpoint);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final list = (data['recommendations'] as List)
+            .map((item) => Destination.fromJson(item))
+            .toList();
+        if (list.isNotEmpty) {
+          state = list;
+        }
+      }
+    } catch (_) {
+      // Retain existing state if offline
+    }
+  }
+
+  Future<void> _fetchRecommendations() async {
+    await fetchRecommendations();
+  }
+
+  static final List<Destination> _initialFallbacks = [
+    Destination(
+      id: 'd1',
+      name: 'Kyoto, Japan',
+      description: 'Famous for its classical Buddhist temples, as well as gardens, imperial palaces, Shinto shrines and traditional wooden houses.',
+      imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80',
+      matchScore: 0.94,
+      reason: 'Because you love historical sites and temperate weather.',
+      estimatedBudget: 85000.0,
+      durationDays: 7,
+    ),
+    Destination(
+      id: 'd2',
+      name: 'Santorini, Greece',
+      description: 'A beautiful island in the Aegean Sea, known for its whitewashed, cubiform houses clinging to cliffs above an underwater caldera.',
+      imageUrl: 'https://images.pexels.com/photos/161815/santorini-oia-greece-water-161815.jpeg?auto=compress&cs=tinysrgb&w=800',
+      matchScore: 0.88,
+      reason: 'Based on your high spending on coastal luxury trips.',
+      estimatedBudget: 120000.0,
+      durationDays: 5,
+    ),
+    Destination(
+      id: 'd3',
+      name: 'Banff, Canada',
+      description: 'A resort town and one of Canada\'s most popular tourist destinations, known for its mountainous surroundings and hot springs.',
+      imageUrl: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800',
+      matchScore: 0.79,
+      reason: 'Great match for your outdoor activity preferences.',
+      estimatedBudget: 95000.0,
+      durationDays: 6,
+    ),
+  ];
 }
 
 final recommendationProvider = NotifierProvider<RecommendationNotifier, List<Destination>>(RecommendationNotifier.new);

@@ -103,9 +103,14 @@ class RecommendationRequest(BaseModel):
     top_n: int = 3
 
 class RecommendedDestination(BaseModel):
+    id: Optional[str] = None
     name: str
     description: Optional[str] = None
     image_url: Optional[str] = None
+    match_score: float = 0.90
+    reason: Optional[str] = None
+    estimated_budget: float = 25000.0
+    duration_days: int = 4
 
 class RecommendationResponse(BaseModel):
     traveler_type: str
