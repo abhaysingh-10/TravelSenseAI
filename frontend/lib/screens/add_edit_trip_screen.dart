@@ -7,10 +7,10 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_input_field.dart';
 
 class AddEditTripScreen extends ConsumerStatefulWidget {
-  final Trip?
-      trip; // If null, we're adding a new trip. If provided, we're editing.
+  final Trip? trip; // If null, we're adding a new trip. If provided, we're editing.
+  final String? initialDestination; // For pre-filling from recommendations
 
-  const AddEditTripScreen({super.key, this.trip});
+  const AddEditTripScreen({super.key, this.trip, this.initialDestination});
 
   @override
   ConsumerState<AddEditTripScreen> createState() => _AddEditTripScreenState();
@@ -27,8 +27,9 @@ class _AddEditTripScreenState extends ConsumerState<AddEditTripScreen> {
   @override
   void initState() {
     super.initState();
-    _destinationController =
-        TextEditingController(text: widget.trip?.destination ?? '');
+    _destinationController = TextEditingController(
+      text: widget.trip?.destination ?? widget.initialDestination ?? '',
+    );
     _budgetController = TextEditingController(
         text:
             widget.trip != null ? widget.trip!.budget.toStringAsFixed(0) : '');

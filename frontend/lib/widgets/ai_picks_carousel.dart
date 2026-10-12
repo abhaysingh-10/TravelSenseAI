@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../providers/recommendation_provider.dart';
 import '../screens/recommendations_screen.dart';
+import '../screens/destination_detail_screen.dart';
 
 class AIPicksCarousel extends ConsumerStatefulWidget {
   const AIPicksCarousel({super.key});
@@ -76,7 +77,7 @@ class _AIPicksCarouselState extends ConsumerState<AIPicksCarousel> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const RecommendationsScreen()),
+                    MaterialPageRoute(builder: (context) => DestinationDetailScreen(destination: dest)),
                   );
                 },
                 child: Container(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/recommendation_provider.dart';
+import 'destination_detail_screen.dart';
 
 class RecommendationsScreen extends ConsumerWidget {
   const RecommendationsScreen({super.key});
@@ -26,7 +27,16 @@ class RecommendationsScreen extends ConsumerWidget {
           itemCount: destinations.length,
           itemBuilder: (context, index) {
             final dest = destinations[index];
-            return Container(
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DestinationDetailScreen(destination: dest),
+                  ),
+                );
+              },
+              child: Container(
               margin: const EdgeInsets.only(bottom: 24),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -120,8 +130,9 @@ class RecommendationsScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-            );
-          },
+            ),
+          );
+        },
         ),
       ),
     );
