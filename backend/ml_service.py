@@ -139,9 +139,24 @@ def predict_trip_duration(destination, total_cost_inr, travelers_count, transpor
 # -----------------
 # RECOMMENDATION ENGINE
 # -----------------
+import random
+
+PREFERENCE_KEYWORDS = {
+    'mountains': ['hill station', 'mountain', 'himalayan', 'valley', 'tea', 'coffee'],
+    'beaches': ['beach', 'coastal', 'backwaters', 'scuba', 'cliff'],
+    'history & culture': ['heritage', 'spiritual', 'culture', 'pilgrimage', 'buddhist', 'temple', 'archaeology', 'monument', 'palace'],
+    'culture': ['heritage', 'spiritual', 'culture', 'pilgrimage', 'buddhist', 'temple', 'archaeology', 'monument', 'palace'],
+    'road trips': ['adventure', 'nature', 'mountain', 'valley', 'waterfalls', 'wildlife', 'coffee'],
+    'luxury': ['resort', 'palace', 'luxury', 'romance', 'wellness', 'heritage & palaces', 'beach & nightlife'],
+    'backpacking': ['adventure', 'spiritual', 'beach & spiritual', 'heritage & archaeology', 'cliff'],
+    'food & culinary': ['heritage & culture', 'french heritage', 'coastal', 'backwaters'],
+    'urban exploration': ['heritage & culture', 'heritage & monument', 'heritage & palaces']
+}
+
 try:
-    # We group by destination to calculate average cost and days
+    # We group by destination to calculate average cost, days, and keep primary category
     dest_stats = df.groupby("destination").agg(
+        category=("category", "first"),
         avg_cost=("total_cost_inr", "mean"),
         avg_days=("trip_days", "mean")
     ).reset_index()
@@ -149,23 +164,63 @@ except Exception as e:
     print(f"Error calculating dest_stats: {e}")
     dest_stats = pd.DataFrame()
 
-def get_destination_recommendations(traveler_type: str, top_n: int = 3):
+CURATED_DESTINATIONS = {
+    'Munnar', 'Agra', 'Mysore', 'Kaziranga', 'Kodaikanal', 'Gangtok',
+    'Tirupati', 'Mussoorie', 'Havelock Island', 'Bodh Gaya', 'Puri',
+    'Varanasi', 'Shillong', 'Ooty', 'Khajuraho', 'Amritsar', 'Wayanad',
+    'Srinagar', 'Bandipur', 'Pondicherry', 'Pushkar', 'Jaipur', 'Kovalam',
+    'Alleppey', 'Goa', 'Rameshwaram', 'Madurai', 'Spiti Valley',
+    'Chikmagalur', 'Manali', 'Gokarna'
+}
+
+def get_destination_recommendations(traveler_type: str, top_n: int = 3, preferences: list = None):
     if dest_stats.empty:
         return []
         
+    candidates = dest_stats.copy()
+    
+    # 1. Filter by preferences if provided
+    if preferences and len(preferences) > 0:
+        keywords = []
+        for p in preferences:
+            clean_p = p.lower().strip()
+            if clean_p in PREFERENCE_KEYWORDS:
+                keywords.extend(PREFERENCE_KEYWORDS[clean_p])
+            else:
+                keywords.append(clean_p)
+                
+        pref_matches = candidates[candidates['category'].str.lower().apply(
+            lambda cat: any(kw in str(cat) for kw in keywords)
+        )]
+        if not pref_matches.empty:
+            candidates = pref_matches
+
+    # 2. Prioritize destinations that have rich database descriptions & HD photography
+    curated_matches = candidates[candidates['destination'].isin(CURATED_DESTINATIONS)]
+    if not curated_matches.empty and len(curated_matches) >= top_n:
+        candidates = curated_matches
+
+    # 3. Segment tuning if pool is sufficiently large
     if traveler_type.lower() == "luxury travelers":
-        recs = dest_stats.sort_values(by="avg_cost", ascending=False).head(top_n)
+        luxury_pool = candidates[candidates["avg_cost"] > 40000]
+        if not luxury_pool.empty and len(luxury_pool) >= top_n:
+            candidates = luxury_pool
     elif traveler_type.lower() == "frequent backpackers":
-        recs = dest_stats.sort_values(by="avg_cost", ascending=True).head(top_n)
-    else:
-        # Standard Travelers (middle ground)
-        recs = dest_stats[(dest_stats["avg_cost"] > 30000) & (dest_stats["avg_cost"] < 50000)].head(top_n)
-        
-        # Fallback if standard filters yield nothing
-        if recs.empty:
-            recs = dest_stats.head(top_n)
+        bp_pool = candidates[candidates["avg_cost"] < 35000]
+        if not bp_pool.empty and len(bp_pool) >= top_n:
+            candidates = bp_pool
+    elif traveler_type.lower() == "standard travelers":
+        std_pool = candidates[(candidates["avg_cost"] >= 25000) & (candidates["avg_cost"] <= 55000)]
+        if not std_pool.empty and len(std_pool) >= top_n:
+            candidates = std_pool
             
-    return recs["destination"].tolist()
+    dest_list = candidates["destination"].tolist()
+    if not dest_list:
+        dest_list = dest_stats["destination"].tolist()
+        
+    # 4. Dynamic Rotation: Sample top_n distinct destinations randomly on each call
+    sample_size = min(top_n, len(dest_list))
+    return random.sample(dest_list, sample_size)
 
 
 def segment_traveler(total_trips: int, avg_budget: float) -> str:

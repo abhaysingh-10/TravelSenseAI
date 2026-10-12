@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 import '../providers/segmentation_provider.dart';
+import '../providers/preferences_provider.dart';
 import 'login_screen.dart';
-
-class PreferencesNotifier extends Notifier<List<String>> {
-  @override
-  List<String> build() => ['Mountains', 'Road Trips'];
-  
-  void updatePreferences(List<String> newPrefs) {
-    state = newPrefs;
-  }
-}
-
-final preferencesProvider = NotifierProvider<PreferencesNotifier, List<String>>(PreferencesNotifier.new);
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

@@ -353,27 +353,37 @@ RECOMMENDED_DURATIONS = {
     "Gangtok": 4,
 }
 
-def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session):
+def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session, preferences: list = None):
     destinations = db.query(models.Destination).filter(models.Destination.name.in_(rec_names)).all()
     results = []
-    scores = [0.95, 0.91, 0.88, 0.85, 0.82]
+    scores = [0.96, 0.93, 0.89, 0.86, 0.83]
     
     for i, name in enumerate(rec_names):
         dest = next((d for d in destinations if d.name == name), None)
         stat = dest_stats[dest_stats['destination'] == name] if not dest_stats.empty else pd.DataFrame()
         cost = float(stat['avg_cost'].values[0]) if not stat.empty else 30000.0
+        cat = str(stat['category'].values[0]).lower() if (not stat.empty and 'category' in stat.columns) else ""
         days = RECOMMENDED_DURATIONS.get(name, max(3, int(round(stat['avg_days'].values[0])) if not stat.empty else 3))
         
-        score = scores[i] if i < len(scores) else 0.80
+        score = scores[i] if i < len(scores) else 0.82
         desc = dest.description if dest and dest.description else f"An extraordinary destination known for scenic beauty and rich culture in {name}."
-        img = dest.image_url if dest and dest.image_url else "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80"
+        img = dest.image_url if dest and dest.image_url else "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
         
-        if traveler_type == "Luxury Travelers":
-            reason = "Curated for luxury explorers with premium resorts and stays."
+        # Personalized AI reason matching preference / category
+        if any(kw in cat for kw in ['hill station', 'mountain', 'himalayan', 'valley', 'tea', 'coffee']):
+            reason = f"Curated for your passion for mountain vistas, tea gardens, and scenic peaks in {name}."
+        elif any(kw in cat for kw in ['beach', 'coastal', 'backwaters', 'cliff', 'scuba']):
+            reason = f"Matches your coastal preferences with relaxing waters, beaches, and sea breeze in {name}."
+        elif any(kw in cat for kw in ['heritage', 'spiritual', 'culture', 'temple', 'monument', 'palace']):
+            reason = f"Handpicked for your interest in historical landmarks, culture, and architecture in {name}."
+        elif any(kw in cat for kw in ['wildlife', 'safari', 'nature']):
+            reason = f"Perfect for wildlife encounters, jungle trails, and nature adventures in {name}."
+        elif traveler_type == "Luxury Travelers":
+            reason = f"Curated for luxury explorers with premium resorts and stays in {name}."
         elif traveler_type == "Frequent Backpackers":
-            reason = "Matches your backpacking profile with high adventure and budget stays."
+            reason = f"Matches your backpacking profile with high adventure and budget exploration in {name}."
         else:
-            reason = "Curated for balanced exploration and rich cultural sights."
+            reason = f"Curated for balanced exploration and rich cultural sights in {name}."
             
         results.append({
             "id": f"rec_{i+1}",
@@ -391,6 +401,7 @@ def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session):
 def get_ml_recommendations_get(
     top_n: int = 3,
     traveler_type: Optional[str] = None,
+    preferences: Optional[str] = None,
     db: Session = Depends(get_db),
     token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False))
 ):
@@ -413,8 +424,9 @@ def get_ml_recommendations_get(
         if not user_segment or user_segment == "New Traveler":
             user_segment = "Standard Travelers"
             
-        rec_names = get_destination_recommendations(user_segment, top_n)
-        results = _enrich_recommendations(rec_names, user_segment, db)
+        pref_list = [p.strip() for p in preferences.split(',') if p.strip()] if preferences else []
+        rec_names = get_destination_recommendations(user_segment, top_n, pref_list)
+        results = _enrich_recommendations(rec_names, user_segment, db, pref_list)
         return {"traveler_type": user_segment, "recommendations": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -422,8 +434,8 @@ def get_ml_recommendations_get(
 @app.post("/api/ml/recommendations", response_model=schemas.RecommendationResponse)
 def get_ml_recommendations(request: schemas.RecommendationRequest, db: Session = Depends(get_db)):
     try:
-        rec_names = get_destination_recommendations(request.traveler_type, request.top_n)
-        results = _enrich_recommendations(rec_names, request.traveler_type, db)
+        rec_names = get_destination_recommendations(request.traveler_type, request.top_n, request.preferences)
+        results = _enrich_recommendations(rec_names, request.traveler_type, db, request.preferences)
         return {"traveler_type": request.traveler_type, "recommendations": results}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

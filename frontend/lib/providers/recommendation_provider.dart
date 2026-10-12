@@ -2,19 +2,34 @@ import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/destination_model.dart';
 import '../services/api_service.dart';
+import 'preferences_provider.dart';
 
 class RecommendationNotifier extends Notifier<List<Destination>> {
   @override
   List<Destination> build() {
-    _fetchRecommendations();
+    final prefs = ref.watch(preferencesProvider);
+    Future.microtask(() => fetchRecommendations(preferences: prefs));
     return _initialFallbacks;
   }
 
-  Future<void> fetchRecommendations({String? travelerType}) async {
+  Future<void> fetchRecommendations({String? travelerType, List<String>? preferences}) async {
     try {
-      final endpoint = travelerType != null
-          ? '/api/ml/recommendations?traveler_type=${Uri.encodeComponent(travelerType)}&top_n=3'
-          : '/api/ml/recommendations?top_n=3';
+      final activePrefs = preferences ?? ref.read(preferencesProvider);
+      final queryParams = <String, String>{
+        'top_n': '3',
+      };
+      if (travelerType != null) {
+        queryParams['traveler_type'] = travelerType;
+      }
+      if (activePrefs != null && activePrefs.isNotEmpty) {
+        queryParams['preferences'] = activePrefs.join(',');
+      }
+
+      final queryString = queryParams.entries
+          .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+          .join('&');
+      final endpoint = '/api/ml/recommendations?$queryString';
+
       final response = await ApiService.getRequest(endpoint);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -28,10 +43,6 @@ class RecommendationNotifier extends Notifier<List<Destination>> {
     } catch (_) {
       // Retain existing state if offline
     }
-  }
-
-  Future<void> _fetchRecommendations() async {
-    await fetchRecommendations();
   }
 
   static final List<Destination> _initialFallbacks = [

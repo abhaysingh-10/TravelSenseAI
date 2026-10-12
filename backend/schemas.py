@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 
 class UserCreate(BaseModel):
     email: str
@@ -101,6 +101,7 @@ class DurationPredictionResponse(BaseModel):
 class RecommendationRequest(BaseModel):
     traveler_type: str
     top_n: int = 3
+    preferences: Optional[List[str]] = None
 
 class RecommendedDestination(BaseModel):
     id: Optional[str] = None
