@@ -65,10 +65,32 @@ class RecommendationsScreen extends ConsumerWidget {
                         height: 200,
                         width: double.infinity,
                         fit: BoxFit.cover,
+                        filterQuality: FilterQuality.medium,
                         errorBuilder: (context, err, stack) => Container(
                           height: 200,
                           color: Colors.grey.shade200,
                           child: const Icon(Icons.image_not_supported, color: Colors.grey),
+                        ),
+                      ),
+                      Positioned(
+                        top: 16,
+                        left: 16,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.6),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.schedule, size: 13, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${dest.durationDays} Days',
+                                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 11, color: Colors.white),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       Positioned(
@@ -105,6 +127,8 @@ class RecommendationsScreen extends ConsumerWidget {
                         const SizedBox(height: 8),
                         Text(
                           dest.description,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(fontSize: 14, color: Colors.grey.shade600, height: 1.5),
                         ),
                         const SizedBox(height: 16),
@@ -128,6 +152,36 @@ class RecommendationsScreen extends ConsumerWidget {
                               ),
                             ],
                           ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'ESTIMATED BUDGET',
+                                  style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.grey.shade500, letterSpacing: 0.5),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  '₹${dest.estimatedBudget.toInt().toString().replaceAllMapped(RegExp(r'(\d+?)(?=(\d\d)+(\d)(?!\d))'), (m) => '${m[1]},')}',
+                                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF121C2C)),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Explore Plan',
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(Icons.arrow_forward_rounded, size: 16, color: Theme.of(context).primaryColor),
+                              ],
+                            ),
+                          ],
                         ),
                       ],
                     ),
