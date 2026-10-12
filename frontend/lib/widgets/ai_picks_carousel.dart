@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../providers/recommendation_provider.dart';
-import '../screens/recommendations_screen.dart';
 import '../screens/destination_detail_screen.dart';
 
 class AIPicksCarousel extends ConsumerStatefulWidget {
@@ -27,7 +26,8 @@ class _AIPicksCarouselState extends ConsumerState<AIPicksCarousel> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
-      final destinations = ref.read(recommendationProvider);
+      final allDestinations = ref.read(recommendationProvider);
+      final destinations = allDestinations.take(3).toList();
       if (destinations.isEmpty) return;
 
       int nextPage = _currentPage + 1;
@@ -54,7 +54,8 @@ class _AIPicksCarouselState extends ConsumerState<AIPicksCarousel> {
 
   @override
   Widget build(BuildContext context) {
-    final destinations = ref.watch(recommendationProvider);
+    final allDestinations = ref.watch(recommendationProvider);
+    final destinations = allDestinations.take(3).toList();
     final formatCurrency = NumberFormat('#,##0');
 
     if (destinations.isEmpty) return const SizedBox.shrink();
@@ -94,6 +95,7 @@ class _AIPicksCarouselState extends ConsumerState<AIPicksCarousel> {
                     image: DecorationImage(
                       image: NetworkImage(dest.imageUrl),
                       fit: BoxFit.cover,
+                      filterQuality: FilterQuality.medium,
                     ),
                   ),
                   clipBehavior: Clip.antiAlias,

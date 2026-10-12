@@ -319,6 +319,40 @@ def get_duration_prediction(request: schemas.DurationPredictionRequest):
 
 from ml_service import get_destination_recommendations, dest_stats, segment_traveler
 
+RECOMMENDED_DURATIONS = {
+    "Agra": 3,
+    "Alleppey": 3,
+    "Bandipur": 3,
+    "Chikmagalur": 4,
+    "Goa": 4,
+    "Jaipur": 4,
+    "Munnar": 4,
+    "Manali": 4,
+    "Ooty": 3,
+    "Varanasi": 3,
+    "Gokarna": 3,
+    "Pondicherry": 3,
+    "Puri": 3,
+    "Amritsar": 3,
+    "Srinagar": 4,
+    "Spiti Valley": 5,
+    "Kodaikanal": 3,
+    "Mussoorie": 3,
+    "Shillong": 4,
+    "Havelock Island": 4,
+    "Rameshwaram": 3,
+    "Mysore": 3,
+    "Madurai": 3,
+    "Kaziranga": 3,
+    "Pushkar": 3,
+    "Kovalam": 3,
+    "Bodh Gaya": 3,
+    "Khajuraho": 3,
+    "Tirupati": 2,
+    "Wayanad": 3,
+    "Gangtok": 4,
+}
+
 def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session):
     destinations = db.query(models.Destination).filter(models.Destination.name.in_(rec_names)).all()
     results = []
@@ -328,7 +362,7 @@ def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session):
         dest = next((d for d in destinations if d.name == name), None)
         stat = dest_stats[dest_stats['destination'] == name] if not dest_stats.empty else pd.DataFrame()
         cost = float(stat['avg_cost'].values[0]) if not stat.empty else 30000.0
-        days = int(round(stat['avg_days'].values[0])) if not stat.empty else 4
+        days = RECOMMENDED_DURATIONS.get(name, max(3, int(round(stat['avg_days'].values[0])) if not stat.empty else 3))
         
         score = scores[i] if i < len(scores) else 0.80
         desc = dest.description if dest and dest.description else f"An extraordinary destination known for scenic beauty and rich culture in {name}."
@@ -355,7 +389,7 @@ def _enrich_recommendations(rec_names: list, traveler_type: str, db: Session):
 
 @app.get("/api/ml/recommendations", response_model=schemas.RecommendationResponse)
 def get_ml_recommendations_get(
-    top_n: int = 4,
+    top_n: int = 3,
     traveler_type: Optional[str] = None,
     db: Session = Depends(get_db),
     token: Optional[str] = Depends(OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False))

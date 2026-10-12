@@ -13,8 +13,8 @@ class RecommendationNotifier extends Notifier<List<Destination>> {
   Future<void> fetchRecommendations({String? travelerType}) async {
     try {
       final endpoint = travelerType != null
-          ? '/api/ml/recommendations?traveler_type=${Uri.encodeComponent(travelerType)}'
-          : '/api/ml/recommendations';
+          ? '/api/ml/recommendations?traveler_type=${Uri.encodeComponent(travelerType)}&top_n=3'
+          : '/api/ml/recommendations?top_n=3';
       final response = await ApiService.getRequest(endpoint);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
