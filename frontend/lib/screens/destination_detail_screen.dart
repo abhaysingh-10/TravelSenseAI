@@ -19,9 +19,14 @@ class _DestinationDetailScreenState extends ConsumerState<DestinationDetailScree
   int _selectedDayIndex = 0;
   final formatCurrency = NumberFormat('#,##,###', 'en_IN');
 
+  ItineraryParams get _params => ItineraryParams(
+        destination: widget.destination.name,
+        days: widget.destination.durationDays,
+      );
+
   @override
   Widget build(BuildContext context) {
-    final itineraryAsync = ref.watch(itineraryProvider(widget.destination.name));
+    final itineraryAsync = ref.watch(itineraryProvider(_params));
     final theme = Theme.of(context);
     final primaryColor = theme.primaryColor;
 
@@ -290,6 +295,7 @@ class _DestinationDetailScreenState extends ConsumerState<DestinationDetailScree
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
             ),
+     
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -733,7 +739,7 @@ class _DestinationDetailScreenState extends ConsumerState<DestinationDetailScree
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: () {
-              ref.invalidate(itineraryProvider(widget.destination.name));
+              ref.invalidate(itineraryProvider(_params));
             },
             icon: const Icon(Icons.refresh_rounded, size: 16),
             label: const Text('Try Again'),
