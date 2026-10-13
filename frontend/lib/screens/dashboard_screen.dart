@@ -421,172 +421,153 @@ class DashboardScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title row with AI badge and Score
+          // Header Row: AI Tag + Status on Left, Score Pill on Right
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(
-                      Icons.auto_awesome_rounded,
-                      color: Color(0xFF6366F1),
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'AI Budget Efficiency',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF121C2C),
-                        ),
-                      ),
-                      Text(
-                        'ML Benchmark vs. Actual Spend',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              // Efficiency Score Pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: scoreColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: scoreColor.withValues(alpha: 0.3)),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      eff.score >= 80 ? Icons.verified_rounded : Icons.speed_rounded,
-                      color: scoreColor,
-                      size: 15,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      '${eff.score}/100',
+                    const Text(
+                      'AI BUDGET EFFICIENCY',
                       style: TextStyle(
-                        color: scoreColor,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF64748B),
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      eff.status,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: isSmartSpender ? const Color(0xFF059669) : const Color(0xFFDC2626),
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 12),
+              // Clean Score Pill (No Icons)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                decoration: BoxDecoration(
+                  color: scoreColor.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: scoreColor.withValues(alpha: 0.25)),
+                ),
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${eff.score}',
+                        style: TextStyle(
+                          color: scoreColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' / 100',
+                        style: TextStyle(
+                          color: scoreColor.withValues(alpha: 0.7),
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
 
-          const SizedBox(height: 18),
-
-          if (eff.tripBenchmarks.isEmpty)
+          if (eff.tripBenchmarks.isEmpty) ...[
+            const SizedBox(height: 18),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.info_outline_rounded, color: Colors.grey.shade600, size: 20),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      'Log expenses on your trips to view real-time ML budget efficiency and savings analysis.',
-                      style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                    ),
+              child: const Text(
+                'Log expenses on your trips to view real-time ML budget efficiency and savings analysis.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF64748B), height: 1.4),
+              ),
+            ),
+          ] else ...[
+            const SizedBox(height: 20),
+
+            // Hero Savings Value (No Icons)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(
+                  isSmartSpender
+                      ? '₹${formatCurrency.format(eff.netSavings)}'
+                      : '+₹${formatCurrency.format(eff.netSavings.abs())}',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    color: isSmartSpender ? const Color(0xFF047857) : const Color(0xFFB91C1C),
+                    letterSpacing: -1,
                   ),
-                ],
-              ),
-            )
-          else ...[
-            // Net Savings Banner
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: isSmartSpender ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: isSmartSpender ? const Color(0xFFA7F3D0) : const Color(0xFFFECACA),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    isSmartSpender ? Icons.savings_outlined : Icons.trending_up_rounded,
+                const SizedBox(width: 8),
+                Text(
+                  isSmartSpender ? 'Net Saved' : 'Over Forecast',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
                     color: isSmartSpender ? const Color(0xFF059669) : const Color(0xFFDC2626),
-                    size: 22,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isSmartSpender
-                              ? '₹${formatCurrency.format(eff.netSavings)} Saved'
-                              : '₹${formatCurrency.format(eff.netSavings.abs())} Over Forecast',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 15,
-                            color: isSmartSpender ? const Color(0xFF065F46) : const Color(0xFF991B1B),
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          eff.status,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: isSmartSpender ? const Color(0xFF047857) : const Color(0xFFB91C1C),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Sleek Efficiency Gauge Bar
+            ClipRRect(
+              borderRadius: BorderRadius.circular(99),
+              child: LinearProgressIndicator(
+                value: (eff.score / 100).clamp(0.0, 1.0),
+                minHeight: 6,
+                backgroundColor: const Color(0xFFF1F5F9),
+                valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
 
-            // 2-Column Comparison Row (Actual vs ML Benchmark)
+            // Side-by-Side Comparison Blocks (No Icons)
             Row(
               children: [
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFF1F5F9)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'ACTUAL SPENT',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: Colors.grey.shade500,
-                            letterSpacing: 0.5,
+                            color: Color(0xFF94A3B8),
+                            letterSpacing: 0.8,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -595,7 +576,7 @@ class DashboardScreen extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF1E293B),
+                            color: Color(0xFF0F172A),
                           ),
                         ),
                       ],
@@ -605,21 +586,22 @@ class DashboardScreen extends ConsumerWidget {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: const Color(0xFFF1F5F9)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'ML BENCHMARK',
                           style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
-                            color: Colors.grey.shade500,
-                            letterSpacing: 0.5,
+                            color: Color(0xFF94A3B8),
+                            letterSpacing: 0.8,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -628,7 +610,7 @@ class DashboardScreen extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,
-                            color: Color(0xFF6366F1),
+                            color: Color(0xFF4F46E5),
                           ),
                         ),
                       ],
@@ -684,13 +666,6 @@ class DashboardScreen extends ConsumerWidget {
           itemBuilder: (context, index) {
             final item = benchmarks[index];
             final isUnder = item.isUnderBudget;
-            final diffText = isUnder
-                ? '-₹${formatCurrency.format(item.difference)}'
-                : '+₹${formatCurrency.format(item.difference.abs())}';
-
-            final badgeBg = isUnder ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2);
-            final badgeTextColor = isUnder ? const Color(0xFF059669) : const Color(0xFFDC2626);
-            final badgeBorder = isUnder ? const Color(0xFFA7F3D0) : const Color(0xFFFECACA);
 
             final maxVal = item.predictedCost > item.actualSpent ? item.predictedCost : item.actualSpent;
             final ratio = maxVal > 0 ? (item.actualSpent / maxVal).clamp(0.0, 1.0) : 0.0;
@@ -712,105 +687,99 @@ class DashboardScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Title row (No icons)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Row(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF1F5F9),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.place_rounded,
-                              size: 16,
-                              color: Color(0xFF475569),
+                          Text(
+                            item.destination,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
+                              color: Color(0xFF0F172A),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item.destination,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 15,
-                                  color: Color(0xFF1E293B),
-                                ),
-                              ),
-                              Text(
-                                '${item.days} ${item.days == 1 ? "day" : "days"}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey.shade500,
-                                ),
-                              ),
-                            ],
+                          const SizedBox(height: 2),
+                          Text(
+                            '${item.days} ${item.days == 1 ? "day trip" : "days trip"}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Color(0xFF94A3B8),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ],
                       ),
+                      // Modern Text Pill (No Icons)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: badgeBg,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: badgeBorder),
+                          color: isUnder ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: isUnder ? const Color(0xFFA7F3D0) : const Color(0xFFFECACA),
+                          ),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              isUnder ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
-                              size: 12,
-                              color: badgeTextColor,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              diffText,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                color: badgeTextColor,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          isUnder
+                              ? '₹${formatCurrency.format(item.difference)} Under'
+                              : '₹${formatCurrency.format(item.difference.abs())} Over',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            color: isUnder ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
+                  // Progress indicator
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(99),
                     child: LinearProgressIndicator(
                       value: ratio,
-                      minHeight: 6,
-                      backgroundColor: const Color(0xFFEEF2F6),
+                      minHeight: 5,
+                      backgroundColor: const Color(0xFFF1F5F9),
                       valueColor: AlwaysStoppedAnimation<Color>(
                         isUnder ? const Color(0xFF10B981) : const Color(0xFFEF4444),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
+                  // Values row
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Spent: ₹${formatCurrency.format(item.actualSpent)}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF334155),
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'Spent ',
+                              style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500),
+                            ),
+                            TextSpan(
+                              text: '₹${formatCurrency.format(item.actualSpent)}',
+                              style: const TextStyle(fontSize: 12, color: Color(0xFF1E293B), fontWeight: FontWeight.w700),
+                            ),
+                          ],
                         ),
                       ),
-                      Text(
-                        'AI Model: ₹${formatCurrency.format(item.predictedCost)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade600,
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            const TextSpan(
+                              text: 'AI Forecast ',
+                              style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500),
+                            ),
+                            TextSpan(
+                              text: '₹${formatCurrency.format(item.predictedCost)}',
+                              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w700),
+                            ),
+                          ],
                         ),
                       ),
                     ],
