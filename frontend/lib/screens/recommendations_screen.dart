@@ -60,23 +60,10 @@ class RecommendationsScreen extends ConsumerWidget {
                   // Image with Match Badge
                   Stack(
                     children: [
-                      Image.network(
-                        dest.imageUrl,
+                      dest.buildImage(
                         height: 200,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                        filterQuality: FilterQuality.medium,
-                        errorBuilder: (context, err, stack) => Image.asset(
-                          'assets/images/fallback_suitcase.jpg',
-                          height: 200,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, e, s) => Container(
-                            height: 200,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.image_not_supported, color: Colors.grey),
-                          ),
-                        ),
                       ),
                       Positioned(
                         top: 16,

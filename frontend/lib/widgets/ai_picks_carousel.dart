@@ -97,22 +97,7 @@ class _AIPicksCarouselState extends ConsumerState<AIPicksCarousel> {
                   child: Stack(
                     fit: StackFit.expand,
                     children: [
-                      Image.network(
-                        dest.imageUrl,
-                        fit: BoxFit.cover,
-                        filterQuality: FilterQuality.medium,
-                        errorBuilder: (context, error, stackTrace) => Image.asset(
-                          'assets/images/fallback_suitcase.jpg',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, err, stack) => Container(
-                            decoration: const BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
+                      dest.buildImage(fit: BoxFit.cover),
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(

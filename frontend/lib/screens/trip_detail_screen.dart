@@ -95,17 +95,8 @@ class TripDetailScreen extends ConsumerWidget {
               const SizedBox(width: 16),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.network(
-                currentTrip.imageUrl,
+              background: currentTrip.buildImage(
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: Colors.grey.shade200,
-                    child: Center(
-                      child: Icon(Icons.image_not_supported_outlined, color: Colors.grey.shade400, size: 40),
-                    ),
-                  );
-                },
               ),
             ),
           ),

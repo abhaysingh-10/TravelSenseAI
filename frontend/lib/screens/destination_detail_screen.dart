@@ -91,57 +91,8 @@ class _DestinationDetailScreenState extends ConsumerState<DestinationDetailScree
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Destination Hero Image
-                  Image.network(
-                    widget.destination.imageUrl,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Container(
-                        color: const Color(0xFF1E293B),
-                        child: Center(
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    loadingProgress.expectedTotalBytes!
-                                : null,
-                            strokeWidth: 2,
-                            color: primaryColor,
-                          ),
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'assets/images/fallback_suitcase.jpg',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, err, stack) => Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Color(0xFF0F172A), Color(0xFF1E293B), Color(0xFF334155)],
-                          ),
-                        ),
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.landscape_rounded, size: 64, color: Colors.white.withValues(alpha: 0.4)),
-                              const SizedBox(height: 8),
-                              Text(
-                                widget.destination.name,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white.withValues(alpha: 0.7),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  // Destination Hero Image (Loads instant local asset with network/graceful fallback)
+                  widget.destination.buildImage(fit: BoxFit.cover),
                   // Dark Top & Bottom Vignette for text contrast
                   Container(
                     decoration: BoxDecoration(

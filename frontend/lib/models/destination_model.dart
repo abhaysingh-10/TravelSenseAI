@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class Destination {
   final String id;
   final String name;
@@ -19,6 +21,46 @@ class Destination {
     this.estimatedBudget = 15000.0,
     this.durationDays = 5,
   });
+
+  String get localAssetPath {
+    final slug = name.toLowerCase().trim().replaceAll(RegExp(r'[^a-z0-9]+'), '_');
+    return 'assets/images/destinations/$slug.jpg';
+  }
+
+  Widget buildImage({
+    double? width,
+    double? height,
+    BoxFit fit = BoxFit.cover,
+  }) {
+    return Image.asset(
+      localAssetPath,
+      width: width,
+      height: height,
+      fit: fit,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.network(
+          imageUrl,
+          width: width,
+          height: height,
+          fit: fit,
+          errorBuilder: (context, err, stack) => Image.asset(
+            'assets/images/fallback_suitcase.jpg',
+            width: width,
+            height: height,
+            fit: fit,
+            errorBuilder: (context, e, s) => Container(
+              width: width,
+              height: height,
+              color: const Color(0xFF1E293B),
+              child: const Center(
+                child: Icon(Icons.landscape_rounded, color: Colors.white30, size: 48),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   factory Destination.fromJson(Map<String, dynamic> json) {
     return Destination(
