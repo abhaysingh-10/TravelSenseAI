@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/trip_model.dart';
 import '../services/api_service.dart';
@@ -26,7 +27,7 @@ class TripListNotifier extends Notifier<List<Trip>> {
         }).toList();
       }
     } catch (e) {
-      print('Error fetching trips: $e');
+      debugPrint('Error fetching trips: $e');
     }
   }
 
@@ -54,7 +55,7 @@ class TripListNotifier extends Notifier<List<Trip>> {
       }
       return false;
     } catch (e) {
-      print('Error adding trip: $e');
+      debugPrint('Error adding trip: $e');
       return false;
     }
   }
@@ -81,7 +82,7 @@ class TripListNotifier extends Notifier<List<Trip>> {
       }
       return false;
     } catch (e) {
-      print('Error updating trip: $e');
+      debugPrint('Error updating trip: $e');
       return false;
     }
   }
@@ -95,7 +96,7 @@ class TripListNotifier extends Notifier<List<Trip>> {
       }
       return false;
     } catch (e) {
-      print('Error deleting trip: $e');
+      debugPrint('Error deleting trip: $e');
       return false;
     }
   }

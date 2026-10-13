@@ -43,7 +43,7 @@ class DashboardScreen extends ConsumerWidget {
     final interval = (barMaxY / 4).clamp(100.0, double.infinity);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF9F9FF),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
@@ -54,14 +54,17 @@ class DashboardScreen extends ConsumerWidget {
             slivers: [
               const SliverToBoxAdapter(
                 child: Padding(
-                  padding: EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 8.0),
-                  child: Text(
-                    'Analytics',
-                    style: TextStyle(
-                      color: Color(0xFF121C2C),
-                      fontWeight: FontWeight.w800,
-                      fontSize: 28,
-                      letterSpacing: -0.5,
+                  padding: EdgeInsets.fromLTRB(20.0, 16.0, 20.0, 8.0),
+                  child: Center(
+                    child: Text(
+                      'Analytics',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Color(0xFF0F172A),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 24,
+                        letterSpacing: -0.3,
+                      ),
                     ),
                   ),
                 ),
@@ -70,34 +73,27 @@ class DashboardScreen extends ConsumerWidget {
               if (stats.isLoading)
                 const SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                    padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                     child: LinearProgressIndicator(minHeight: 2),
                   ),
                 ),
 
               SliverPadding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                 sliver: SliverList(
                   delegate: SliverChildListDelegate([
-                    // Total Spent Card
+                    // Total Lifetime Spent Card
                     Container(
-                      padding: const EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).primaryColor,
-                            Theme.of(context).primaryColor.withValues(alpha: 0.8),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(24),
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
-                          )
+                            color: Theme.of(context).primaryColor.withValues(alpha: 0.25),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
                         ],
                       ),
                       child: Column(
@@ -108,72 +104,129 @@ class DashboardScreen extends ConsumerWidget {
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.8,
                             ),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: 6),
                           Text(
                             '₹${formatCurrency.format(stats.totalLifetimeSpent)}',
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -1,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
                             ),
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 18),
+                          Container(
+                            height: 1,
+                            color: Colors.white.withValues(alpha: 0.15),
+                          ),
+                          const SizedBox(height: 14),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Total Trips', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '${stats.totalTrips}',
-                                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Total trips',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '${stats.totalTrips}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  const Text('Avg Per Trip', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    '₹${formatCurrency.format(stats.averageCostPerTrip)}',
-                                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
+                              Container(
+                                width: 1,
+                                height: 28,
+                                color: Colors.white.withValues(alpha: 0.15),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Avg per trip',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '₹${formatCurrency.format(stats.averageCostPerTrip)}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
-                          )
+                          ),
                         ],
                       ),
                     ),
 
                     if (stats.budgetEfficiency != null) ...[
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 28),
+                      const Text(
+                        'Budget Performance',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF0F172A),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
                       _buildBudgetEfficiencyCard(context, stats.budgetEfficiency!, formatCurrency),
                       if (stats.budgetEfficiency!.tripBenchmarks.isNotEmpty)
                         _buildTripBenchmarksList(context, stats.budgetEfficiency!.tripBenchmarks, formatCurrency),
                     ],
 
-                    const SizedBox(height: 32),
-                    const Text('Spending Trend', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF121C2C))),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 28),
+                    const Text(
+                      'Spending Trend',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF0F172A),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
 
                     // Bar Chart
                     Container(
                       height: 220,
-                      padding: const EdgeInsets.only(top: 24, right: 24, left: 16, bottom: 16),
+                      padding: const EdgeInsets.only(top: 24, right: 20, left: 16, bottom: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 16, offset: const Offset(0, 8))
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.02),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
                         ],
                       ),
                       child: stats.monthlySpending.isEmpty
@@ -260,32 +313,33 @@ class DashboardScreen extends ConsumerWidget {
                             ),
                     ),
 
-                    const SizedBox(height: 32),
-                    const Text('Category Breakdown', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF121C2C))),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 28),
+                    const Text('Category Breakdown', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF0F172A))),
+                    const SizedBox(height: 12),
 
                     // Donut Chart & Legend
                     if (stats.spendingByCategory.isEmpty || stats.totalLifetimeSpent <= 0)
                       Container(
-                        padding: const EdgeInsets.all(32),
+                        padding: const EdgeInsets.all(28),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 16, offset: const Offset(0, 8))
+                            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))
                           ],
                         ),
                         child: Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.pie_chart_outline_rounded, size: 48, color: Colors.grey.shade300),
+                              Icon(Icons.pie_chart_outline_rounded, size: 40, color: Colors.grey.shade300),
                               const SizedBox(height: 12),
                               const Text(
                                 'No Expenses Logged Yet',
-                                style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Color(0xFF121C2C)),
+                                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: Color(0xFF0F172A)),
                               ),
-                              const SizedBox(height: 6),
+                              const SizedBox(height: 4),
                               Text(
                                 'Add expenses to your trips to see your category breakdown here.',
                                 textAlign: TextAlign.center,
@@ -297,12 +351,13 @@ class DashboardScreen extends ConsumerWidget {
                       )
                     else
                       Container(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(24),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                           boxShadow: [
-                            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 16, offset: const Offset(0, 8))
+                            BoxShadow(color: Colors.black.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2))
                           ],
                         ),
                         child: Column(
@@ -386,103 +441,76 @@ class DashboardScreen extends ConsumerWidget {
     NumberFormat formatCurrency,
   ) {
     final isSmartSpender = eff.netSavings >= 0;
-    final scoreColor = eff.score >= 80
-        ? const Color(0xFF10B981) // Emerald green
-        : eff.score >= 60
-            ? const Color(0xFFF59E0B) // Amber
-            : const Color(0xFFEF4444); // Red
+
+    // Professional fintech status wording
+    final String primaryStatus;
+    final String secondaryStatus;
+    if (eff.tripBenchmarks.isEmpty) {
+      primaryStatus = 'No Activity';
+      secondaryStatus = 'Awaiting Data';
+    } else if (isSmartSpender) {
+      primaryStatus = 'Optimal Spending';
+      secondaryStatus = 'Under Benchmark';
+    } else {
+      primaryStatus = 'Budget Exceeded';
+      secondaryStatus = 'Over Benchmark';
+    }
+
+    final accentColor = isSmartSpender ? Theme.of(context).primaryColor : const Color(0xFFDC2626);
 
     return Container(
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFEEF2F6), width: 1.5),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.025),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Row: AI Tag + Status on Left, Score Pill on Right
+          // Status row
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'AI BUDGET EFFICIENCY',
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF64748B),
-                        letterSpacing: 1.1,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      eff.status,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: isSmartSpender ? const Color(0xFF059669) : const Color(0xFFDC2626),
-                      ),
-                    ),
-                  ],
+              Text(
+                primaryStatus,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF0F172A),
                 ),
               ),
-              const SizedBox(width: 12),
-              // Clean Score Pill (No Icons)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-                decoration: BoxDecoration(
-                  color: scoreColor.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: scoreColor.withValues(alpha: 0.25)),
-                ),
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${eff.score}',
-                        style: TextStyle(
-                          color: scoreColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      TextSpan(
-                        text: ' / 100',
-                        style: TextStyle(
-                          color: scoreColor.withValues(alpha: 0.7),
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+              if (secondaryStatus.isNotEmpty) ...[
+                const SizedBox(width: 6),
+                Text(
+                  '· $secondaryStatus',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: isSmartSpender
+                        ? const Color(0xFF15803D)
+                        : const Color(0xFFDC2626),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
 
           if (eff.tripBenchmarks.isEmpty) ...[
-            const SizedBox(height: 18),
+            const SizedBox(height: 16),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
                 color: const Color(0xFFF8FAFC),
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFF1F5F9)),
               ),
               child: const Text(
                 'Log expenses on your trips to view real-time ML budget efficiency and savings analysis.',
@@ -490,31 +518,40 @@ class DashboardScreen extends ConsumerWidget {
               ),
             ),
           ] else ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 18),
 
-            // Hero Savings Value (No Icons)
+            // Main savings figure with theme-colored "Net Savings" badge
             Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   isSmartSpender
                       ? '₹${formatCurrency.format(eff.netSavings)}'
-                      : '+₹${formatCurrency.format(eff.netSavings.abs())}',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w800,
-                    color: isSmartSpender ? const Color(0xFF047857) : const Color(0xFFB91C1C),
-                    letterSpacing: -1,
+                      : '-₹${formatCurrency.format(eff.netSavings.abs())}',
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF0F172A),
+                    letterSpacing: -0.3,
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  isSmartSpender ? 'Net Saved' : 'Over Forecast',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: isSmartSpender ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: accentColor.withValues(alpha: 0.25),
+                    ),
+                  ),
+                  child: Text(
+                    isSmartSpender ? 'Net Savings' : 'Over Forecast',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: accentColor,
+                    ),
                   ),
                 ),
               ],
@@ -522,90 +559,85 @@ class DashboardScreen extends ConsumerWidget {
 
             const SizedBox(height: 12),
 
-            // Sleek Efficiency Gauge Bar
+            // Thin, restrained progress bar using app theme color
             ClipRRect(
-              borderRadius: BorderRadius.circular(99),
+              borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
                 value: (eff.score / 100).clamp(0.0, 1.0),
-                minHeight: 6,
+                minHeight: 4,
                 backgroundColor: const Color(0xFFF1F5F9),
-                valueColor: AlwaysStoppedAnimation<Color>(scoreColor),
+                valueColor: AlwaysStoppedAnimation<Color>(accentColor),
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // Side-by-Side Comparison Blocks (No Icons)
-            Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFF1F5F9)),
-                    ),
+            // Two compact comparison columns with subtle background and simple divider
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xFFF1F5F9)),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'ACTUAL SPENT',
+                          'Actual spent',
                           style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF94A3B8),
-                            letterSpacing: 0.8,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF64748B),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Text(
                           '₹${formatCurrency.format(eff.totalActual)}',
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
                             color: Color(0xFF0F172A),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8FAFC),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: const Color(0xFFF1F5F9)),
-                    ),
+                  Container(
+                    width: 1,
+                    height: 28,
+                    color: const Color(0xFFE2E8F0),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'ML BENCHMARK',
+                          'ML benchmark',
                           style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFF94A3B8),
-                            letterSpacing: 0.8,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF64748B),
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Text(
                           '₹${formatCurrency.format(eff.totalPredicted)}',
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF4F46E5),
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF0F172A),
                           ),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ],
@@ -623,24 +655,24 @@ class DashboardScreen extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 32),
+        const SizedBox(height: 28),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               'Trip Benchmarks',
               style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF121C2C),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF0F172A),
               ),
             ),
             Text(
               '${benchmarks.length} evaluated',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade500,
-                fontWeight: FontWeight.w500,
+                color: Color(0xFF64748B),
+                fontWeight: FontWeight.w400,
               ),
             ),
           ],
@@ -659,23 +691,22 @@ class DashboardScreen extends ConsumerWidget {
             final ratio = maxVal > 0 ? (item.actualSpent / maxVal).clamp(0.0, 1.0) : 0.0;
 
             return Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFFF1F5F9)),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: const Color(0xFFE2E8F0), width: 1),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.015),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
                   ),
                 ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Title row (No icons)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -685,8 +716,8 @@ class DashboardScreen extends ConsumerWidget {
                           Text(
                             item.destination,
                             style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
                               color: Color(0xFF0F172A),
                             ),
                           ),
@@ -694,80 +725,65 @@ class DashboardScreen extends ConsumerWidget {
                           Text(
                             '${item.days} ${item.days == 1 ? "day trip" : "days trip"}',
                             style: const TextStyle(
-                              fontSize: 12,
-                              color: Color(0xFF94A3B8),
-                              fontWeight: FontWeight.w500,
+                              fontSize: 11,
+                              color: Color(0xFF64748B),
+                              fontWeight: FontWeight.w400,
                             ),
                           ),
                         ],
                       ),
-                      // Modern Text Pill (No Icons)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: isUnder ? const Color(0xFFECFDF5) : const Color(0xFFFEF2F2),
-                          borderRadius: BorderRadius.circular(10),
+                          color: isUnder ? const Color(0xFFDCFCE7) : const Color(0xFFFEE2E2),
+                          borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: isUnder ? const Color(0xFFA7F3D0) : const Color(0xFFFECACA),
+                            color: isUnder ? const Color(0xFF86EFAC) : const Color(0xFFFCA5A5),
                           ),
                         ),
                         child: Text(
                           isUnder
-                              ? '₹${formatCurrency.format(item.difference)} Under'
-                              : '₹${formatCurrency.format(item.difference.abs())} Over',
+                              ? '₹${formatCurrency.format(item.difference)} under'
+                              : '₹${formatCurrency.format(item.difference.abs())} over',
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
-                            color: isUnder ? const Color(0xFF059669) : const Color(0xFFDC2626),
+                            color: isUnder ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 14),
-                  // Progress indicator
+                  const SizedBox(height: 12),
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(99),
+                    borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: ratio,
-                      minHeight: 5,
+                      minHeight: 4,
                       backgroundColor: const Color(0xFFF1F5F9),
                       valueColor: AlwaysStoppedAnimation<Color>(
-                        isUnder ? const Color(0xFF10B981) : const Color(0xFFEF4444),
+                        isUnder ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  // Values row
+                  const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'Spent ',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500),
-                            ),
-                            TextSpan(
-                              text: '₹${formatCurrency.format(item.actualSpent)}',
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF1E293B), fontWeight: FontWeight.w700),
-                            ),
-                          ],
+                      Text(
+                        'Spent: ₹${formatCurrency.format(item.actualSpent)}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF334155),
                         ),
                       ),
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            const TextSpan(
-                              text: 'AI Forecast ',
-                              style: TextStyle(fontSize: 12, color: Color(0xFF94A3B8), fontWeight: FontWeight.w500),
-                            ),
-                            TextSpan(
-                              text: '₹${formatCurrency.format(item.predictedCost)}',
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF64748B), fontWeight: FontWeight.w700),
-                            ),
-                          ],
+                      Text(
+                        'Benchmark: ₹${formatCurrency.format(item.predictedCost)}',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF64748B),
                         ),
                       ),
                     ],

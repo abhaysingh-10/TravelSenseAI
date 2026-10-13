@@ -173,10 +173,10 @@ class ProfileScreen extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Profile Information',
                 style: TextStyle(
                     fontSize: 18,
@@ -353,7 +353,7 @@ class ProfileScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'TRAVELER SEGMENT',
                   style: TextStyle(
                       fontSize: 12,
@@ -361,16 +361,16 @@ class ProfileScreen extends ConsumerWidget {
                       letterSpacing: 1,
                       color: Colors.grey),
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   segment,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF121C2C)),
                 ),
-                SizedBox(height: 4),
-                Text(
+                const SizedBox(height: 4),
+                const Text(
                   'Based on your past trips, spending habits, and travel frequency.',
                   style:
                       TextStyle(fontSize: 14, color: Colors.grey, height: 1.4),

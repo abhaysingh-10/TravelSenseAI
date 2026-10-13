@@ -579,15 +579,15 @@ def get_dashboard_analytics(db: Session = Depends(get_db), current_user: models.
             if total_actual <= total_predicted:
                 savings_ratio = (total_predicted - total_actual) / total_predicted
                 score = min(98, int(85 + savings_ratio * 15))
-                status = "Smart Spender (Under Budget)"
+                status = "Optimal Spending (Under Benchmark)"
             else:
                 over_ratio = (total_actual - total_predicted) / total_predicted
                 score = max(35, int(80 - over_ratio * 50))
-                status = "High Spender (Over Budget)"
+                status = "Budget Exceeded (Over Benchmark)"
         else:
             net_savings = 0.0
             score = 100
-            status = "No Completed Trips Yet"
+            status = "No Activity (Awaiting Data)"
 
         budget_efficiency = {
             "score": score,

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/expense_model.dart';
 import '../services/api_service.dart';
@@ -22,7 +23,7 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
         }).toList();
       }
     } catch (e) {
-      print('Error fetching expenses: $e');
+      debugPrint('Error fetching expenses: $e');
     }
   }
 
@@ -47,7 +48,7 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
       }
       return false;
     } catch (e) {
-      print('Error adding expense: $e');
+      debugPrint('Error adding expense: $e');
       return false;
     }
   }
@@ -72,7 +73,7 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
       }
       return false;
     } catch (e) {
-      print('Error updating expense: $e');
+      debugPrint('Error updating expense: $e');
       return false;
     }
   }
@@ -86,7 +87,7 @@ class ExpenseListNotifier extends Notifier<List<Expense>> {
       }
       return false;
     } catch (e) {
-      print('Error deleting expense: $e');
+      debugPrint('Error deleting expense: $e');
       return false;
     }
   }
