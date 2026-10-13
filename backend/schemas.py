@@ -145,10 +145,29 @@ class MonthlySpend(BaseModel):
     month: str
     amount: float
 
+class TripBenchmark(BaseModel):
+    tripId: int
+    destination: str
+    actualSpent: float
+    predictedCost: float
+    difference: float
+    isUnderBudget: bool
+    days: int
+
+class BudgetEfficiency(BaseModel):
+    score: int
+    totalPredicted: float
+    totalActual: float
+    netSavings: float
+    status: str
+    tripBenchmarks: List[TripBenchmark]
+
 class DashboardAnalytics(BaseModel):
     totalLifetimeSpent: float
     averageCostPerTrip: float
     totalTrips: int
     spendingByCategory: Dict[str, float]
     monthlySpending: Dict[str, float]
+    budgetEfficiency: Optional[BudgetEfficiency] = None
+
 

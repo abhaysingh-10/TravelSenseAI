@@ -4,12 +4,79 @@ import '../services/api_service.dart';
 import 'expense_provider.dart';
 import 'trip_provider.dart';
 
+class TripBenchmark {
+  final int tripId;
+  final String destination;
+  final double actualSpent;
+  final double predictedCost;
+  final double difference;
+  final bool isUnderBudget;
+  final int days;
+
+  TripBenchmark({
+    required this.tripId,
+    required this.destination,
+    required this.actualSpent,
+    required this.predictedCost,
+    required this.difference,
+    required this.isUnderBudget,
+    required this.days,
+  });
+
+  factory TripBenchmark.fromJson(Map<String, dynamic> json) {
+    return TripBenchmark(
+      tripId: json['tripId'] as int,
+      destination: (json['destination'] ?? '') as String,
+      actualSpent: ((json['actualSpent'] ?? 0.0) as num).toDouble(),
+      predictedCost: ((json['predictedCost'] ?? 0.0) as num).toDouble(),
+      difference: ((json['difference'] ?? 0.0) as num).toDouble(),
+      isUnderBudget: (json['isUnderBudget'] ?? false) as bool,
+      days: (json['days'] ?? 1) as int,
+    );
+  }
+}
+
+class BudgetEfficiency {
+  final int score;
+  final double totalPredicted;
+  final double totalActual;
+  final double netSavings;
+  final String status;
+  final List<TripBenchmark> tripBenchmarks;
+
+  BudgetEfficiency({
+    required this.score,
+    required this.totalPredicted,
+    required this.totalActual,
+    required this.netSavings,
+    required this.status,
+    required this.tripBenchmarks,
+  });
+
+  factory BudgetEfficiency.fromJson(Map<String, dynamic> json) {
+    var list = <TripBenchmark>[];
+    if (json['tripBenchmarks'] != null) {
+      final rawList = json['tripBenchmarks'] as List<dynamic>;
+      list = rawList.map((item) => TripBenchmark.fromJson(item as Map<String, dynamic>)).toList();
+    }
+    return BudgetEfficiency(
+      score: (json['score'] ?? 0) as int,
+      totalPredicted: ((json['totalPredicted'] ?? 0.0) as num).toDouble(),
+      totalActual: ((json['totalActual'] ?? 0.0) as num).toDouble(),
+      netSavings: ((json['netSavings'] ?? 0.0) as num).toDouble(),
+      status: (json['status'] ?? '') as String,
+      tripBenchmarks: list,
+    );
+  }
+}
+
 class DashboardStats {
   final double totalLifetimeSpent;
   final double averageCostPerTrip;
   final int totalTrips;
   final Map<String, double> spendingByCategory;
   final Map<String, double> monthlySpending;
+  final BudgetEfficiency? budgetEfficiency;
   final bool isLoading;
   final String? error;
 
@@ -19,6 +86,7 @@ class DashboardStats {
     required this.totalTrips,
     required this.spendingByCategory,
     required this.monthlySpending,
+    this.budgetEfficiency,
     this.isLoading = false,
     this.error,
   });
@@ -30,6 +98,7 @@ class DashboardStats {
       totalTrips: 0,
       spendingByCategory: {},
       monthlySpending: {},
+      budgetEfficiency: null,
       isLoading: isLoading,
     );
   }
@@ -51,12 +120,18 @@ class DashboardStats {
       });
     }
 
+    BudgetEfficiency? budgetEff;
+    if (json['budgetEfficiency'] != null) {
+      budgetEff = BudgetEfficiency.fromJson(json['budgetEfficiency'] as Map<String, dynamic>);
+    }
+
     return DashboardStats(
       totalLifetimeSpent: ((json['totalLifetimeSpent'] ?? 0.0) as num).toDouble(),
       averageCostPerTrip: ((json['averageCostPerTrip'] ?? 0.0) as num).toDouble(),
       totalTrips: (json['totalTrips'] ?? 0) as int,
       spendingByCategory: catMap,
       monthlySpending: monthMap,
+      budgetEfficiency: budgetEff,
       isLoading: false,
     );
   }
@@ -88,6 +163,7 @@ class DashboardNotifier extends Notifier<DashboardStats> {
           totalTrips: state.totalTrips,
           spendingByCategory: state.spendingByCategory,
           monthlySpending: state.monthlySpending,
+          budgetEfficiency: state.budgetEfficiency,
           isLoading: false,
           error: 'Failed to fetch analytics (Status ${response.statusCode})',
         );
@@ -99,6 +175,7 @@ class DashboardNotifier extends Notifier<DashboardStats> {
         totalTrips: state.totalTrips,
         spendingByCategory: state.spendingByCategory,
         monthlySpending: state.monthlySpending,
+        budgetEfficiency: state.budgetEfficiency,
         isLoading: false,
         error: e.toString(),
       );

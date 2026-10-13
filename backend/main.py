@@ -532,13 +532,79 @@ def get_dashboard_analytics(db: Session = Depends(get_db), current_user: models.
                 m_str = trip.start_date.strftime("%b")
                 if m_str in monthlySpending:
                     monthlySpending[m_str] += (trip.spent or 0.0)
-                    
+
+        # AI Budget Efficiency Benchmarking using Random Forest Model
+        benchmarks = []
+        total_actual = 0.0
+        total_predicted = 0.0
+
+        for t in trips:
+            spent = t.spent or 0.0
+            if spent <= 0:
+                continue
+            days = 3
+            if t.start_date and t.end_date:
+                d = (t.end_date - t.start_date).days
+                if d > 0:
+                    days = d
+            try:
+                pred = predict_trip_cost(
+                    destination=t.destination,
+                    trip_days=days,
+                    travelers_count=1,
+                    transport_mode="Train",
+                    hotel_type="Mid-Range 3-Star",
+                    season="Monsoon",
+                    traveler_type="Standard Travelers"
+                )
+            except Exception:
+                pred = spent * 1.15
+
+            pred_float = float(round(pred, 2))
+            diff_float = float(round(pred_float - spent, 2))
+            benchmarks.append({
+                "tripId": t.id,
+                "destination": t.destination,
+                "actualSpent": float(round(spent, 2)),
+                "predictedCost": pred_float,
+                "difference": diff_float,
+                "isUnderBudget": spent <= pred_float,
+                "days": days
+            })
+            total_actual += spent
+            total_predicted += pred_float
+
+        if total_actual > 0:
+            net_savings = float(round(total_predicted - total_actual, 2))
+            if total_actual <= total_predicted:
+                savings_ratio = (total_predicted - total_actual) / total_predicted
+                score = min(98, int(85 + savings_ratio * 15))
+                status = "Smart Spender (Under Budget)"
+            else:
+                over_ratio = (total_actual - total_predicted) / total_predicted
+                score = max(35, int(80 - over_ratio * 50))
+                status = "High Spender (Over Budget)"
+        else:
+            net_savings = 0.0
+            score = 100
+            status = "No Completed Trips Yet"
+
+        budget_efficiency = {
+            "score": score,
+            "totalPredicted": float(round(total_predicted, 2)),
+            "totalActual": float(round(total_actual, 2)),
+            "netSavings": net_savings,
+            "status": status,
+            "tripBenchmarks": benchmarks
+        }
+
         return {
             "totalTrips": total_trips,
             "totalLifetimeSpent": round(totalLifetimeSpent, 2),
             "averageCostPerTrip": round(averageCostPerTrip, 2),
             "spendingByCategory": spendingByCategory,
-            "monthlySpending": monthlySpending
+            "monthlySpending": monthlySpending,
+            "budgetEfficiency": budget_efficiency
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
