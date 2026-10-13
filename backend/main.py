@@ -499,11 +499,14 @@ def get_dashboard_analytics(db: Session = Depends(get_db), current_user: models.
         # Get overall totals
         trips = db.query(models.Trip).filter(models.Trip.user_id == current_user.id).all()
         total_trips = len(trips)
-        totalLifetimeSpent = sum((t.spent or 0.0) for t in trips)
-        averageCostPerTrip = (totalLifetimeSpent / total_trips) if total_trips > 0 else 0.0
         
-        # Category Breakdown
+        # Category Breakdown & Expenses
         expenses = db.query(models.Expense).filter(models.Expense.user_id == current_user.id).all()
+        
+        totalExpenses = sum((exp.amount or 0.0) for exp in expenses)
+        totalTripSpent = sum((t.spent or 0.0) for t in trips)
+        totalLifetimeSpent = max(totalExpenses, totalTripSpent)
+        averageCostPerTrip = (totalLifetimeSpent / total_trips) if total_trips > 0 else 0.0
         
         spendingByCategory = {}
         for exp in expenses:
