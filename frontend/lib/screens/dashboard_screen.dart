@@ -52,29 +52,17 @@ class DashboardScreen extends ConsumerWidget {
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             slivers: [
-              SliverToBoxAdapter(
+              const SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24.0, 16.0, 16.0, 8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Analytics',
-                        style: TextStyle(
-                          color: Color(0xFF121C2C),
-                          fontWeight: FontWeight.w800,
-                          fontSize: 28,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.refresh_rounded, color: Color(0xFF121C2C)),
-                        tooltip: 'Refresh Analytics',
-                        onPressed: () {
-                          ref.read(dashboardProvider.notifier).fetchAnalytics();
-                        },
-                      ),
-                    ],
+                  padding: EdgeInsets.fromLTRB(24.0, 16.0, 24.0, 8.0),
+                  child: Text(
+                    'Analytics',
+                    style: TextStyle(
+                      color: Color(0xFF121C2C),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 28,
+                      letterSpacing: -0.5,
+                    ),
                   ),
                 ),
               ),
