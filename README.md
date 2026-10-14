@@ -242,8 +242,3 @@ flutter run
 * **Trip Duration Regressor**: Random Forest Regressor ($R^2 = 74.3\%$, Mean Absolute Error $= 0.45$ Days).
 * **Traveler Segmentation**: K-Means Clustering ($k=4$: Luxury Travelers, Frequent Backpackers, Standard Travelers, Occasional Vacationers).
 
----
-
-## Authors
-
-* **Lead Developer and ML Engineer**: Abhay Singh
