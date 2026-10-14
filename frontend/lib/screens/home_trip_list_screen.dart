@@ -127,23 +127,94 @@ class HomeTripListScreen extends ConsumerWidget {
                 ),
               ),
 
-              // Trip List
-              SliverPadding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final trip = trips[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 20.0),
-                        child: _buildTripCard(context, ref, trip),
-                      );
-                    },
-                    childCount: trips.length,
+              // Trip List or Empty State
+              if (trips.isEmpty)
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.03),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.luggage_outlined,
+                            size: 48,
+                            color: Theme.of(context).primaryColor.withValues(alpha: 0.6),
+                          ),
+                          const SizedBox(height: 12),
+                          const Text(
+                            'No Trips Planned Yet',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Color(0xFF1E293B),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            'Tap the button below or pick an AI recommendation above to start your journey.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                              height: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const AddEditTripScreen()),
+                              );
+                            },
+                            icon: const Icon(Icons.add, size: 18),
+                            label: const Text('Plan Your First Trip'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              elevation: 0,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              else
+                SliverPadding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  sliver: SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        final trip = trips[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 20.0),
+                          child: _buildTripCard(context, ref, trip),
+                        );
+                      },
+                      childCount: trips.length,
+                    ),
                   ),
                 ),
-              ),
             ],
           ),
         ),
