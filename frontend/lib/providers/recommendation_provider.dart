@@ -5,6 +5,8 @@ import '../services/api_service.dart';
 import 'preferences_provider.dart';
 
 class RecommendationNotifier extends Notifier<List<Destination>> {
+  bool _isFetching = false;
+
   @override
   List<Destination> build() {
     final prefs = ref.watch(preferencesProvider);
@@ -13,6 +15,8 @@ class RecommendationNotifier extends Notifier<List<Destination>> {
   }
 
   Future<void> fetchRecommendations({String? travelerType, List<String>? preferences}) async {
+    if (_isFetching) return;
+    _isFetching = true;
     try {
       final activePrefs = preferences ?? ref.read(preferencesProvider);
       final queryParams = <String, String>{
@@ -42,39 +46,41 @@ class RecommendationNotifier extends Notifier<List<Destination>> {
       }
     } catch (_) {
       // Retain existing state if offline
+    } finally {
+      _isFetching = false;
     }
   }
 
   static final List<Destination> _initialFallbacks = [
     Destination(
-      id: 'd1',
-      name: 'Kyoto, Japan',
-      description: 'Famous for its classical Buddhist temples, as well as gardens, imperial palaces, Shinto shrines and traditional wooden houses.',
-      imageUrl: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80',
-      matchScore: 0.94,
-      reason: 'Because you love historical sites and temperate weather.',
-      estimatedBudget: 85000.0,
-      durationDays: 7,
+      id: 'dest_manali',
+      name: 'Manali',
+      description: 'A high-altitude Himalayan resort town known for snow-capped peaks, scenic valleys, and mountain adventures.',
+      imageUrl: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80',
+      matchScore: 0.95,
+      reason: 'Perfect match for scenic mountain escapes and temperate valleys.',
+      estimatedBudget: 24500.0,
+      durationDays: 4,
     ),
     Destination(
-      id: 'd2',
-      name: 'Santorini, Greece',
-      description: 'A beautiful island in the Aegean Sea, known for its whitewashed, cubiform houses clinging to cliffs above an underwater caldera.',
-      imageUrl: 'https://images.pexels.com/photos/161815/santorini-oia-greece-water-161815.jpeg?auto=compress&cs=tinysrgb&w=800',
+      id: 'dest_goa',
+      name: 'Goa',
+      description: 'Famous for its golden sand beaches, vibrant coastal culture, Portuguese architecture, and nightlife.',
+      imageUrl: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80',
+      matchScore: 0.92,
+      reason: 'Curated for coastal relaxation, beach sunsets, and leisure vibes.',
+      estimatedBudget: 28000.0,
+      durationDays: 4,
+    ),
+    Destination(
+      id: 'dest_jaipur',
+      name: 'Jaipur',
+      description: 'The Pink City of Rajasthan, renowned for its grand royal palaces, majestic forts, and rich heritage.',
+      imageUrl: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?auto=format&fit=crop&w=800&q=80',
       matchScore: 0.88,
-      reason: 'Based on your high spending on coastal luxury trips.',
-      estimatedBudget: 120000.0,
-      durationDays: 5,
-    ),
-    Destination(
-      id: 'd3',
-      name: 'Banff, Canada',
-      description: 'A resort town and one of Canada\'s most popular tourist destinations, known for its mountainous surroundings and hot springs.',
-      imageUrl: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=800',
-      matchScore: 0.79,
-      reason: 'Great match for your outdoor activity preferences.',
-      estimatedBudget: 95000.0,
-      durationDays: 6,
+      reason: 'Recommended for royal architecture, cultural heritage, and vibrant bazaars.',
+      estimatedBudget: 22000.0,
+      durationDays: 4,
     ),
   ];
 }

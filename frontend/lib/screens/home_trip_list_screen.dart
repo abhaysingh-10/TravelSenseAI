@@ -8,6 +8,7 @@ import 'add_edit_trip_screen.dart';
 import 'trip_detail_screen.dart';
 import 'profile_screen.dart';
 import '../widgets/ai_picks_carousel.dart';
+import '../providers/recommendation_provider.dart';
 
 class HomeTripListScreen extends ConsumerWidget {
   const HomeTripListScreen({super.key});
@@ -26,8 +27,11 @@ class HomeTripListScreen extends ConsumerWidget {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            await ref.read(tripListProvider.notifier).fetchTrips();
-            await ref.read(expenseListProvider.notifier).fetchExpenses();
+            await Future.wait([
+              ref.read(tripListProvider.notifier).fetchTrips(),
+              ref.read(expenseListProvider.notifier).fetchExpenses(),
+              ref.read(recommendationProvider.notifier).fetchRecommendations(),
+            ]);
           },
           child: CustomScrollView(
             slivers: [
