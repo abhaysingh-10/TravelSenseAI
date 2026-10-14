@@ -28,7 +28,12 @@ class ApiService {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',
     };
-    return await http.get(Uri.parse('$baseUrl$endpoint'), headers: headers);
+    return await http
+        .get(Uri.parse('$baseUrl$endpoint'), headers: headers)
+        .timeout(
+          const Duration(seconds: 12),
+          onTimeout: () => http.Response('{"detail":"Connection timeout"}', 408),
+        );
   }
 
   static Future<http.Response> postRequest(String endpoint, Map<String, dynamic> body, {bool isUrlEncoded = false}) async {

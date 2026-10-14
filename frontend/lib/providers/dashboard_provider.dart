@@ -138,6 +138,8 @@ class DashboardStats {
 }
 
 class DashboardNotifier extends Notifier<DashboardStats> {
+  bool _isFetching = false;
+
   @override
   DashboardStats build() {
     // Reactively watch trips and expenses so adding/editing an expense
@@ -151,6 +153,8 @@ class DashboardNotifier extends Notifier<DashboardStats> {
   }
 
   Future<void> fetchAnalytics() async {
+    if (_isFetching) return;
+    _isFetching = true;
     try {
       final response = await ApiService.getRequest('/api/analytics/dashboard');
       if (response.statusCode == 200) {
@@ -179,6 +183,8 @@ class DashboardNotifier extends Notifier<DashboardStats> {
         isLoading: false,
         error: e.toString(),
       );
+    } finally {
+      _isFetching = false;
     }
   }
 }

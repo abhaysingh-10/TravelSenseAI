@@ -46,8 +46,19 @@ class DashboardScreen extends ConsumerWidget {
       backgroundColor: const Color(0xFFF8FAFC),
       body: SafeArea(
         child: RefreshIndicator(
+          color: Theme.of(context).primaryColor,
+          backgroundColor: Colors.white,
+          displacement: 24,
+          edgeOffset: 0,
           onRefresh: () async {
-            await ref.read(dashboardProvider.notifier).fetchAnalytics();
+            try {
+              await ref
+                  .read(dashboardProvider.notifier)
+                  .fetchAnalytics()
+                  .timeout(const Duration(seconds: 10));
+            } catch (e) {
+              debugPrint('Refresh completed with timeout or error: $e');
+            }
           },
           child: CustomScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
