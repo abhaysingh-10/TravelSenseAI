@@ -5,11 +5,11 @@ print(" Testing ML Pipeline ")
 
 try:
     print("1. Loading Cost Prediction Model...")
-    cost_model = joblib.load('../agent/models/cost_prediction_rf.pkl')
+    cost_model = joblib.load('backend/ml_data/cost_prediction_rf.pkl')
     print("Cost Prediction Model loaded successfully!")
     
     print("\n2. Loading Duration Prediction Model...")
-    duration_model = joblib.load('../agent/models/duration_prediction_rf.pkl')
+    duration_model = joblib.load('backend/ml_data/duration_prediction_rf.pkl')
     print(" Duration Prediction Model loaded successfully!")
     
     print("\n Feature Format Verification (Task 2) ")
