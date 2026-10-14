@@ -1,5 +1,5 @@
-# ✈️ TravelSense AI
-### *Smart Travel Planning & Expense Management Powered by Machine Learning & Generative AI*
+# TravelSense AI
+### Smart Travel Planning and Expense Management Powered by Machine Learning and Generative AI
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi)](https://fastapi.tiangolo.com)
@@ -10,154 +10,166 @@
 
 ---
 
-## 📖 Overview
+## Executive Overview
 
-**TravelSense AI** is a full-stack, AI-driven mobile travel companion designed to modernize trip planning, cost estimation, and expense management. By combining **predictive machine learning models**, **unsupervised clustering**, and **Google Gemini Generative AI**, TravelSense AI provides travelers with real-time budget forecasting, personalized destination curation, custom multi-day itineraries, and deep spending analytics.
-
----
-
-## ✨ Key Features
-
-### 1. 🤖 Predictive ML Engine (Cost & Duration)
-* **Random Forest Regressors** trained on travel data predict overall trip expenditure based on distance, group size, hotel tier, season, and travel style.
-* Automatically predicts optimal trip duration in days tailored to destination distance and budget constraints.
-* Dynamic distance calculation using **OpenRouteService / OSRM**.
-
-### 2. 🗺️ Intelligent Destination Recommendations
-* Content-based recommendation filtering for **31 curated Indian destinations**.
-* Enriched with scraped Wikipedia descriptions and verified multi-tier offline local assets (`assets/images/destinations/`).
-* Instant fallback handling ensures images and destination details load with zero latency even without an active internet connection.
-
-### 3. 📝 Dynamic Generative Itineraries (Google Gemini)
-* Personalized day-by-day schedules generated on-demand matching the traveler's style (Budget, Standard, Luxury).
-* Structured breakdown for **Morning**, **Afternoon**, and **Evening** highlights, authentic local cuisine recommendations, and scenic viewpoints.
-* In-memory caching for **instantaneous (0.0s)** re-opening and resilient offline curated fallback.
-
-### 4. 📊 Analytics Dashboard & ML Budget Efficiency
-* Visual spending trends and category breakdowns powered by interactive **FL Chart** widgets.
-* **AI Budget Efficiency Benchmark**: Compares actual trip expenditures against ML regression baselines to score spending efficiency and calculate net savings.
-* Pull-to-refresh data synchronization across trips, expenses, and analytics.
-
-### 5. 🏷️ Traveler Segmentation & Profiling
-* **K-Means Clustering** categorizes travelers into distinct personas (e.g., *Budget Explorer*, *Luxury Vacationer*, *Family Planner*).
-* Live traveler segment badge displayed prominently on the user profile.
-
-### 6. 💼 Robust Trip & Expense Management
-* Complete CRUD operations for trips and categorized expenses (Food, Accommodation, Transport, Sightseeing, Shopping).
-* Real-time budget progress bar, remaining allowance calculations, and live weather conditions via **OpenWeatherMap**.
+TravelSense AI is an end-to-end mobile travel platform engineered to streamline trip planning, cost estimation, and expense management. By synthesizing predictive regression models, unsupervised behavioral clustering, and large language model (LLM) orchestration, the system provides real-time budget forecasting, style-driven destination curation, custom multi-day itineraries, and quantitative spending analytics.
 
 ---
 
-## 🏛️ System Architecture
+## Key System Modules
+
+### 1. Predictive Machine Learning Engine
+* **Cost Estimation**: Trained Random Forest Regressor estimates total trip expenditure based on origin, destination, distance, traveler count, accommodation tier, transport mode, and season.
+* **Duration Forecasting**: Predicts optimal trip length in days to balance travel comfort against user budget constraints.
+* **Geospatial Distance Routing**: Integrates OpenRouteService (ORS) to calculate highway travel distance between source and destination cities.
+
+### 2. Destination Recommendation Engine
+* **Content-Based Filtering**: Recommends destinations from a curated dataset of 31 Indian travel locations matched against user preferences and spending style.
+* **Multi-Tier Asset Architecture**: Integrates local offline image assets with network fallbacks, ensuring zero-latency rendering and offline continuity.
+
+### 3. Generative AI Itinerary Synthesizer
+* **Personalized Schedules**: Leverages Google Gemini to dynamically construct detailed daily itineraries based on user travel persona.
+* **Granular Day Planning**: Structures each day into distinct Morning, Afternoon, and Evening activities, highlighting regional landmarks, authentic local cuisine, and transit routes.
+* **In-Memory Caching & Failover**: Eliminates redundant network calls by caching generated plans in client memory and maintaining pre-computed fallbacks for low-connectivity environments.
+
+### 4. Financial Analytics and ML Budget Efficiency
+* **Visual Data Analytics**: Interactive data visualization powered by FL Chart, displaying cumulative spending trends and categorical distribution.
+* **Machine Learning Budget Benchmarking**: Evaluates actual spending against regression baseline predictions to generate efficiency scores and net savings metrics.
+* **Real-Time Synchronization**: Pull-to-refresh architecture ensures synchronized state across trips, expenses, and analytics.
+
+### 5. Traveler Behavioral Segmentation
+* **K-Means Clustering**: Analyzes historical frequency, duration, and budget metrics to classify users into distinct behavioral clusters (Luxury Travelers, Frequent Backpackers, Standard Travelers, Occasional Vacationers).
+* **Profile Integration**: Computes and displays dynamic traveler badges on user profiles.
+
+### 6. Trip and Expense Lifecycle Management
+* Full CRUD operations for trips and categorized expenditures (Accommodation, Food, Transport, Sightseeing, Shopping).
+* Real-time budget progress tracking, remaining balance calculations, and integrated weather forecasting via OpenWeatherMap.
+
+---
+
+## System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Flutter Mobile Client"]
-        UI["Riverpod UI Layer\n(Screens, Widgets, Charts)"]
-        Cache["In-Memory State & Caching"]
-        Storage["Flutter Secure Storage (JWT)"]
+    subgraph Client ["Client Layer (Flutter Mobile App)"]
+        UI["Riverpod UI State Management\n(Screens, Custom Widgets, FL Charts)"]
+        Cache["In-Memory Cache & Local Assets"]
+        Storage["Secure Storage (JWT & Session)"]
     end
 
-    subgraph CloudAPI ["FastAPI Backend (Render)"]
-        Router["FastAPI Application"]
-        Auth["JWT & Bcrypt Security"]
-        MLService["ML Inference Engine"]
-        ExtService["Weather & Distance Services"]
+    subgraph Backend ["Application Layer (FastAPI on Render)"]
+        API["FastAPI REST Router"]
+        Security["Authentication & JWT Verification"]
+        MLService["Machine Learning Inference Service"]
+        ExternalServices["Weather & Distance Services"]
     end
 
-    subgraph DataML ["Data, ML & AI Layer"]
-        DB[(Supabase PostgreSQL)]
-        RF_Cost["Cost Model (.pkl)"]
-        RF_Duration["Duration Model (.pkl)"]
-        KMeans["Clustering Model"]
-        Gemini["Google Gemini LLM"]
+    subgraph Infrastructure ["Data & Intelligence Layer"]
+        Postgres[(PostgreSQL on Supabase)]
+        RFCost["Cost Prediction Model (.pkl)"]
+        RFDuration["Duration Prediction Model (.pkl)"]
+        KMeansModel["Traveler Clustering Model"]
+        GeminiLLM["Google Gemini Generative AI"]
     end
 
-    UI -->|REST API over HTTPS| Router
-    Router --> Auth
-    Router --> MLService
-    Router --> ExtService
-    Router --> DB
-    MLService --> RF_Cost
-    MLService --> RF_Duration
-    MLService --> KMeans
-    MLService --> Gemini
+    UI -->|HTTPS / REST API| API
+    API --> Security
+    API --> MLService
+    API --> ExternalServices
+    API --> Postgres
+    MLService --> RFCost
+    MLService --> RFDuration
+    MLService --> KMeansModel
+    MLService --> GeminiLLM
 ```
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-| Component | Technology / Library | Purpose |
+| Layer | Technologies / Frameworks | Purpose |
 | :--- | :--- | :--- |
-| **Mobile App** | Flutter 3.x, Dart | Cross-platform iOS & Android mobile interface |
+| **Mobile Client** | Flutter 3.x, Dart | Cross-platform mobile application interface |
 | **State Management** | Riverpod 2.x | Reactive dependency injection and provider caching |
-| **Charts & Visuals** | `fl_chart`, `google_fonts` | Spending analytics and modern UI design system |
-| **Backend Framework** | FastAPI (Python 3.9+) | Asynchronous, high-performance RESTful API microservice |
-| **Cloud Database** | PostgreSQL via Supabase | Relational persistence for users, trips, and expenses |
-| **ORM & Migrations** | SQLAlchemy, Alembic | Database object-relational mapping and schema versioning |
-| **Machine Learning** | Scikit-learn, Pandas, NumPy | Regression prediction models & K-Means clustering |
-| **Generative AI** | Google Gemini Generative AI | Dynamic personalized day-by-day itineraries |
-| **External APIs** | OpenWeatherMap, OpenRouteService | Real-time weather forecasts and distance routing |
-| **Hosting** | Render (API), Supabase (DB) | Continuous deployment cloud infrastructure |
+| **Data Visualization** | `fl_chart`, Google Fonts | Financial trend graphs and typography design system |
+| **Backend API** | FastAPI, Python 3.9+, Uvicorn | Asynchronous RESTful API microservice |
+| **Database** | PostgreSQL via Supabase | Relational data persistence for users, trips, and expenses |
+| **ORM & Migrations** | SQLAlchemy, Alembic | Schema definition and database migrations |
+| **Machine Learning** | Scikit-learn, Pandas, NumPy | Regression modeling and unsupervised clustering |
+| **Generative AI** | Google Gemini API | Dynamic day-by-day itinerary generation |
+| **External Services** | OpenWeatherMap, OpenRouteService | Live weather forecasts and geospatial distance routing |
+| **Deployment** | Render (API), Supabase (Database) | Production cloud hosting and continuous deployment |
 
 ---
 
-## 📁 Project Structure
+## Directory Structure
 
 ```
 TravelSenseAI/
-├── backend/                        # FastAPI REST API Backend
-│   ├── main.py                     # Main application entrypoint & API routers
+├── backend/                        # FastAPI REST API backend service
+│   ├── main.py                     # Application entrypoint & route handlers
 │   ├── models.py                   # SQLAlchemy database entity models
 │   ├── schemas.py                  # Pydantic validation schemas
-│   ├── database.py                 # PostgreSQL connection setup
-│   ├── auth.py                     # JWT token handling & password hashing
-│   ├── ml_service.py               # ML inference, recommendations & Gemini LLM
-│   ├── services.py                 # External APIs (Weather, Distance, Images)
-│   ├── ml_data/                    # Trained .pkl models & trip datasets
+│   ├── database.py                 # PostgreSQL connection pool configuration
+│   ├── auth.py                     # JWT token handling & bcrypt password hashing
+│   ├── ml_service.py               # ML inference, recommendations & Gemini integration
+│   ├── services.py                 # External API integrations (Weather, Distance)
+│   ├── ml_data/                    # Serialized .pkl models and reference datasets
 │   └── requirements.txt            # Python dependencies
 │
-├── frontend/                       # Flutter Cross-Platform Mobile Client
+├── frontend/                       # Flutter cross-platform mobile client
 │   ├── lib/
 │   │   ├── main.dart               # Flutter application entrypoint
-│   │   ├── models/                 # Data models (Trip, Expense, Destination, User)
+│   │   ├── models/                 # Strongly typed data models
 │   │   ├── providers/              # Riverpod state notifiers & cached providers
-│   │   ├── screens/                # 12+ application screens (Home, Predictor, Dashboard, etc.)
-│   │   ├── services/               # API service & secure storage
-│   │   ├── theme/                  # Global theme tokens, typography, and colors
-│   │   └── widgets/                # Reusable UI widgets & AI Picks Carousel
-│   └── assets/images/destinations/ # 31 high-resolution offline destination assets
+│   │   ├── screens/                # Modular domain-specific screen folders
+│   │   │   ├── auth/               # Splash, Onboarding, Login, Register
+│   │   │   ├── trips/              # Home list, Add/Edit trip, Trip details
+│   │   │   ├── expenses/           # Add/Edit expense
+│   │   │   ├── destinations/       # Recommendations, Destination details
+│   │   │   ├── predictor/          # Trip cost & duration predictor
+│   │   │   ├── dashboard/          # Analytics dashboard & charts
+│   │   │   ├── profile/            # User profile & segment badge
+│   │   │   ├── main_screen.dart    # Root navigation shell
+│   │   │   └── screens.dart        # Unified barrel export
+│   │   ├── services/               # API service & secure storage client
+│   │   ├── theme/                  # Theme tokens, palette, and typography
+│   │   └── widgets/                # Reusable UI widgets & recommendation carousel
+│   └── assets/images/destinations/ # 31 high-resolution destination assets
 │
-├── notebooks/                      # Jupyter / Google Colab ML Training Pipeline
-│   ├── 01_data_cleaning.ipynb      # Missing value treatment & outlier handling
-│   ├── 02_eda.ipynb                # Exploratory data analysis & distributions
-│   ├── 03_feature_engineering.ipynb# Feature scaling, encoding, and derived metrics
-│   ├── 04_model_training.ipynb     # Cost prediction model training & evaluation
+├── notebooks/                      # Data engineering and ML training pipeline
+│   ├── 01_data_cleaning.ipynb      # Outlier treatment and missing value imputation
+│   ├── 02_eda.ipynb                # Feature correlation and distribution analysis
+│   ├── 03_feature_engineering.ipynb# Encoding, transformation, and train-test splits
+│   ├── 04_model_training.ipynb     # Cost prediction model training and cross-validation
 │   ├── 05_duration_prediction.ipynb# Duration prediction model training
-│   ├── 06_traveler_segmentation.ipynb # K-Means clustering & persona labeling
-│   ├── 07_web_scraper.ipynb        # Destination descriptions & asset scraping
-│   └── 08_recommendation_engine.ipynb # Content-based filtering logic
+│   ├── 06_traveler_segmentation.ipynb # K-Means clustering and persona evaluation
+│   ├── 07_web_scraper.ipynb        # Destination description enrichment
+│   └── 08_recommendation_engine.ipynb # Recommendation logic implementation
 │
-└── test/                           # Automated & manual integration test suites
+├── docs/                           # Project documentation & presentation guides
+│   ├── project_report.md           # Comprehensive academic project report
+│   └── demo_presentation_guide.md  # Slide deck outline and live demo script
+│
+└── test/                           # Automated test suites and verification scripts
 ```
 
 ---
 
-## 🚀 Getting Started
+## Installation and Setup
 
 ### 1. Prerequisites
-* **Flutter SDK**: `^3.19.0` or higher
-* **Python**: `3.9` through `3.11`
-* **PostgreSQL** or free-tier Supabase account
-* Free API keys for:
-  * Google Gemini API (`GEMINI_API_KEY`)
-  * OpenWeatherMap (`OPENWEATHER_API_KEY`)
-  * OpenRouteService (`ORS_API_KEY`)
+* **Flutter SDK**: Version 3.19.0 or higher
+* **Python**: Version 3.9 through 3.11
+* **PostgreSQL**: PostgreSQL 14+ or a cloud Supabase database instance
+* **API Credentials**:
+  * Google Gemini API Key (`GEMINI_API_KEY`)
+  * OpenWeatherMap API Key (`OPENWEATHER_API_KEY`)
+  * OpenRouteService API Key (`ORS_API_KEY`)
 
 ---
 
-### 2. Backend Setup
+### 2. Backend Configuration
 
 ```bash
 # Navigate to backend directory
@@ -167,25 +179,25 @@ cd backend
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+# Install required packages
 pip install -r requirements.txt
 
-# Configure environment variables (.env)
-# Create a .env file matching .env.example with your database and API keys:
-# DATABASE_URL=postgresql://user:pass@host:5432/dbname
-# SECRET_KEY=your_jwt_secret_key
-# GEMINI_API_KEY=your_gemini_key
-# OPENWEATHER_API_KEY=your_weather_key
-# ORS_API_KEY=your_ors_key
+# Configure environment variables
+# Create a .env file with appropriate database credentials and API keys:
+# DATABASE_URL=postgresql://user:password@host:5432/dbname
+# SECRET_KEY=your_secure_jwt_secret
+# GEMINI_API_KEY=your_gemini_api_key
+# OPENWEATHER_API_KEY=your_openweather_key
+# ORS_API_KEY=your_openrouteservice_key
 
-# Run local development server
+# Start the local development server
 uvicorn main:app --reload --port 8000
 ```
-API Documentation will be live at: `http://localhost:8000/docs` (Swagger UI).
+Interactive API documentation will be available at `http://localhost:8000/docs` (Swagger UI).
 
 ---
 
-### 3. Frontend Setup
+### 3. Frontend Configuration
 
 ```bash
 # Navigate to frontend directory
@@ -194,37 +206,44 @@ cd frontend
 # Install Flutter dependencies
 flutter pub get
 
-# Verify environment setup
+# Run static analysis
 flutter analyze
 
-# Run on connected device, simulator, or emulator
+# Launch application on connected device or emulator
 flutter run
 ```
 
 ---
 
-## 📡 REST API Reference
+## REST API Reference
 
-| Method | Endpoint | Description | Auth Required |
+| Method | Endpoint | Description | Authentication |
 | :--- | :--- | :--- | :---: |
-| `POST` | `/auth/register` | Register a new user account | No |
-| `POST` | `/auth/login` | Authenticate user & issue JWT bearer token | No |
-| `GET` | `/trips` | Retrieve all trips for authenticated user | Yes |
-| `POST` | `/trips` | Create a new trip plan with budget | Yes |
-| `PUT` | `/trips/{id}` | Update existing trip details | Yes |
-| `DELETE` | `/trips/{id}` | Delete a trip and associated expenses | Yes |
-| `GET` | `/expenses` | List all logged expenses | Yes |
-| `POST` | `/expenses` | Log a new categorized expense | Yes |
-| `POST` | `/api/ml/predict-cost` | Predict trip cost using Random Forest ML | No |
-| `POST` | `/api/ml/predict-duration` | Predict optimal duration using Random Forest ML | No |
-| `GET` | `/api/ml/recommendations` | Get content-filtered curated destination picks | No |
-| `POST` | `/api/ml/generate-itinerary` | Generate AI day-by-day itinerary with Gemini | No |
-| `GET` | `/api/ml/segmentation` | Calculate live traveler clustering segment | Yes |
-| `GET` | `/api/analytics/dashboard` | Aggregated analytics & ML budget benchmarks | Yes |
+| `POST` | `/auth/register` | Register a new user account | Not Required |
+| `POST` | `/auth/login` | Authenticate user credentials and return JWT | Not Required |
+| `GET` | `/trips` | Retrieve all trips for the authenticated user | Required |
+| `POST` | `/trips` | Create a new trip with target budget and dates | Required |
+| `PUT` | `/trips/{id}` | Update existing trip parameters | Required |
+| `DELETE` | `/trips/{id}` | Remove trip and cascade-delete associated expenses | Required |
+| `GET` | `/expenses` | Retrieve all logged expenses | Required |
+| `POST` | `/expenses` | Record a new categorized expense | Required |
+| `POST` | `/api/ml/predict-cost` | Compute ML cost forecast using Random Forest Regressor | Not Required |
+| `POST` | `/api/ml/predict-duration` | Compute recommended vacation duration | Not Required |
+| `GET` | `/api/ml/recommendations` | Fetch personalized destination recommendations | Not Required |
+| `POST` | `/api/ml/generate-itinerary` | Generate AI day-by-day itinerary via Google Gemini | Not Required |
+| `GET` | `/api/ml/segmentation` | Calculate and return traveler persona clustering badge | Required |
+| `GET` | `/api/analytics/dashboard` | Return aggregated spending analytics and ML benchmarks | Required |
 
 ---
 
-## 👥 Authors & Acknowledgments
+## Machine Learning Metrics Summary
 
-* **Lead Developer & ML Engineer**: Abhay Singh
-* Built with ❤️ for seamless, intelligent, and budget-conscious travel exploration.
+* **Trip Cost Regressor**: Random Forest Regressor ($R^2 = 89.9\%$, Mean Absolute Error $\approx$ ₹6,103).
+* **Trip Duration Regressor**: Random Forest Regressor ($R^2 = 74.3\%$, Mean Absolute Error $= 0.45$ Days).
+* **Traveler Segmentation**: K-Means Clustering ($k=4$: Luxury Travelers, Frequent Backpackers, Standard Travelers, Occasional Vacationers).
+
+---
+
+## Authors
+
+* **Lead Developer and ML Engineer**: Abhay Singh
