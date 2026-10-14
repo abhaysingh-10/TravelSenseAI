@@ -83,7 +83,7 @@ except Exception as e:
     print(f"Error loading model from {DURATION_MODEL_PATH}: {e}")
     duration_model = None
 
-def predict_trip_duration(destination, total_cost_inr, travelers_count, transport_mode, hotel_type, season, traveler_type, user_rating=4.0):
+def predict_trip_duration(destination, total_cost_inr, travelers_count, transport_mode, hotel_type, season, traveler_type, user_rating=4.0, real_distance_km=None):
     if duration_model is None:
         raise ValueError("Duration model not loaded.")
         
