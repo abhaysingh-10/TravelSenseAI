@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../providers/predictor_provider.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_input_field.dart';
+import '../../providers/predictor_provider.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_input_field.dart';
 
 class TripPredictorScreen extends ConsumerStatefulWidget {
   const TripPredictorScreen({super.key});

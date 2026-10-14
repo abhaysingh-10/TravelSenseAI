@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/trip_provider.dart';
-import '../providers/expense_provider.dart';
-import '../providers/auth_provider.dart';
+import '../../providers/trip_provider.dart';
+import '../../providers/expense_provider.dart';
+import '../../providers/auth_provider.dart';
 import 'package:intl/intl.dart';
 import 'add_edit_trip_screen.dart';
 import 'trip_detail_screen.dart';
-import 'profile_screen.dart';
-import '../widgets/ai_picks_carousel.dart';
-import '../providers/recommendation_provider.dart';
+import '../profile/profile_screen.dart';
+import '../../widgets/ai_picks_carousel.dart';
+import '../../providers/recommendation_provider.dart';
 
 class HomeTripListScreen extends ConsumerWidget {
   const HomeTripListScreen({super.key});

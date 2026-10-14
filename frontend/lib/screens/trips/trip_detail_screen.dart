@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../models/trip_model.dart';
-import '../models/expense_model.dart';
-import '../providers/trip_provider.dart';
-import '../providers/expense_provider.dart';
+import '../../models/trip_model.dart';
+import '../../models/expense_model.dart';
+import '../../providers/trip_provider.dart';
+import '../../providers/expense_provider.dart';
 import 'add_edit_trip_screen.dart';
-import 'add_edit_expense_screen.dart';
+import '../expenses/add_edit_expense_screen.dart';
 
 class TripDetailScreen extends ConsumerWidget {
   final Trip trip;

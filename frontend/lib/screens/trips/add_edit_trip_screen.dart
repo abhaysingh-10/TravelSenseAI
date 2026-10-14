@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../models/trip_model.dart';
-import '../providers/trip_provider.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_input_field.dart';
+import '../../models/trip_model.dart';
+import '../../providers/trip_provider.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_input_field.dart';
 
 class AddEditTripScreen extends ConsumerStatefulWidget {
   final Trip? trip; // If null, we're adding a new trip. If provided, we're editing.

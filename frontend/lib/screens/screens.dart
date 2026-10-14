@@ -1,0 +1,14 @@
+export 'main_screen.dart';
+export 'auth/splash_screen.dart';
+export 'auth/onboarding_screen.dart';
+export 'auth/login_screen.dart';
+export 'auth/register_screen.dart';
+export 'trips/home_trip_list_screen.dart';
+export 'trips/add_edit_trip_screen.dart';
+export 'trips/trip_detail_screen.dart';
+export 'expenses/add_edit_expense_screen.dart';
+export 'destinations/destination_detail_screen.dart';
+export 'destinations/recommendations_screen.dart';
+export 'predictor/trip_predictor_screen.dart';
+export 'dashboard/dashboard_screen.dart';
+export 'profile/profile_screen.dart';

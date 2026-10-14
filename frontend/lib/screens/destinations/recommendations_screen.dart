@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/recommendation_provider.dart';
+import '../../providers/recommendation_provider.dart';
 import 'destination_detail_screen.dart';
 
 class RecommendationsScreen extends ConsumerWidget {

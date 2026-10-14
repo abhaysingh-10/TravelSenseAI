@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../models/destination_model.dart';
-import '../models/itinerary_model.dart';
-import '../providers/itinerary_provider.dart';
-import 'add_edit_trip_screen.dart';
+import '../../models/destination_model.dart';
+import '../../models/itinerary_model.dart';
+import '../../providers/itinerary_provider.dart';
+import '../trips/add_edit_trip_screen.dart';
 
 class DestinationDetailScreen extends ConsumerStatefulWidget {
   final Destination destination;

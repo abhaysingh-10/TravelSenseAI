@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../widgets/custom_button.dart';
+import '../../widgets/custom_button.dart';
 import 'login_screen.dart';
 
 class OnboardingScreen extends StatefulWidget {

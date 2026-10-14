@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import '../models/expense_model.dart';
-import '../providers/expense_provider.dart';
-import '../widgets/custom_button.dart';
-import '../widgets/custom_input_field.dart';
+import '../../models/expense_model.dart';
+import '../../providers/expense_provider.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_input_field.dart';
 
 class AddEditExpenseScreen extends ConsumerStatefulWidget {
   final String tripId;

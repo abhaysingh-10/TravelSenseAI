@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home_trip_list_screen.dart';
-import 'profile_screen.dart';
-import 'trip_predictor_screen.dart';
-import 'dashboard_screen.dart';
+import 'trips/home_trip_list_screen.dart';
+import 'profile/profile_screen.dart';
+import 'predictor/trip_predictor_screen.dart';
+import 'dashboard/dashboard_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

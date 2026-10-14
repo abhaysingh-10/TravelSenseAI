@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../providers/recommendation_provider.dart';
-import '../screens/destination_detail_screen.dart';
+import '../screens/destinations/destination_detail_screen.dart';
 
 class AIPicksCarousel extends ConsumerStatefulWidget {
   const AIPicksCarousel({super.key});
